@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            list-style-type: disc;
+            margin-block-start: 0;
+            margin-block-end: 0;
+            margin-inline-start: 0;
+            margin-inline-end: 0;
+            padding-inline-start: 0;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        li {
+            height: 50px;
+            line-height: 50px;
+            border: 1px solid #aaaaaa;
+            width: 200px;
+            padding: 0 10px;
+            margin-bottom: 2px;
+        }
+
+        .handler {
+            width: 30px;
+            height: 30px;
+            background: #666666;
+            display: inline-block;
+        }
+
+        .handler:hover {
+            cursor: all-scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="drag" class="drag">
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+        <li>Item 5</li>
+    </ul>
+    <script>
+        const lis = document.querySelectorAll(".drag li");
+        let draggingElementOrder;
+        let draggingElement;
+        let draggingElementPosition;
+        let animating;
+        for (let i = 0; i < lis.length; i++) {
+            lis[i].setAttribute("draggable", true);
+            lis[i].addEventListener("dragstart", (event) => {
+                draggingElement = event.target;
+            });
+            //当被拖动元素在目的地元素内时触发
+            lis[i].addEventListener("dragover", (event) => {
+                //不能用dragenter，因为dragenter只会触发一次，有时候鼠标动作是来回进出的
+                //每次都要新计算，因为有可能已经换位了
+                draggingElementOrder = Array.from(draggingElement.parentElement.children).indexOf(
+                    draggingElement);
+                const node = event.target;
+                if (node !== draggingElement && !animating) {
+                    draggingElementPosition = draggingElement.getBoundingClientRect();
+                    const order = Array.from(node.parentElement.children).indexOf(node);
+                    //从大的序号移入到小的序号
+                    if (draggingElementOrder > order) {
+                        node.parentElement.insertBefore(draggingElement, node);
+                    } else {
+                        //从小的序号移入到大的序号 节点不是最后一个
+                        if (node.nextElementSibling) {
+                            node.parentElement.insertBefore(draggingElement, node.nextElementSibling);
+                        }
+                        // 节点是最后一个了，不能再用insertBefore
+                        else {
+                            node.parentElement.appendChild(draggingElement);
+                        }
+                    }
+                    const currentPosition = draggingElement.getBoundingClientRect();
+                    console.log(draggingElementPosition, currentPosition);
+                    node.style.transform = `translateY(${currentPosition.y - draggingElementPosition.y}px)`;
+                    draggingElement.style.transform =
+                        `translateY(${-currentPosition.y + draggingElementPosition.y}px)`;
+                    draggingElement.style.transition = "transform 2s linear";
+                    node.style.transition = "transform 2s linear";
+                    animating = true;
+                    // requestAnimationFrame(() => {
+                    //     draggingElement.style.transition = "transform 2s linear";
+                    //     node.style.transition = "transform 2s linear";
+                    //     node.style.transform = "translateY(0)";
+                    //     draggingElement.style.transform = "translateY(0)";
+                    //     node.addEventListener("transitionend", transitionEnd);
+                    // });
+                }
+            });
+
+            function transitionEnd() {
+                //不能用箭头函数，因为有this
+                this.style.transform = null;
+                this.style.transition = null;
+                draggingElement.style.transform = null;
+                draggingElement.style.transition = null;
+                this.removeEventListener("transitionend", transitionEnd);
+                animating = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

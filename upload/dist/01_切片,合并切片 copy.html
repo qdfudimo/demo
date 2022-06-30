@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=s, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.24.0/axios.min.js"></script>
+</head>
+
+<body>
+    <input type="file" id="fileInput">
+    <button id="uploadBtn">上传</button>
+</body>
+<script>
+    function file2Obj(file) {
+        return {
+            ...file,
+            lastModified: file.lastModified,
+            lastModifiedDate: file.lastModifiedDate,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            uid: file.uid || 1,
+            percent: 0,
+            originFileObj: file,
+        };
+    }
+    // 请求基准地址
+    axios.defaults.baseURL = 'http://localhost:3000'
+    // 选中的文件
+    var file = null
+    // 选择文件
+    document.getElementById('fileInput').onchange = function ({
+        target: {
+            files
+        }
+    }) {
+        file = files[0]
+        console.log(file);
+        file = file2Obj(file)
+        console.log(file);
+        let formData = new FormData()
+        formData.append('file', file)
+        formData.append('name', 111)
+        formData.append('list', [{
+            a: 1,
+            b: 2
+        }])
+        console.log(formData);
+        console.log(formData.keys());
+        axios({
+            method: 'post',
+            url: '/upload',
+            data: formData
+        })
+    }
+</script>
+
+</html>

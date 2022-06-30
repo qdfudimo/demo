@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		#box {
+			width: 300px;
+			height: 400px;
+			margin: 50px auto;
+			border: 1px solid #f00;
+			position: relative;
+			overflow: hidden;
+			/*不让文字被选中*/
+			user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+		}
+		#content {
+			width: 280px;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		#scroll {
+			width: 20px;
+			height: 100%;
+			background-color: #ccc;
+			position: absolute;
+			right: 0;
+			top: 0;
+		}
+		#bar {
+			width: 100%;
+			height: 100px;
+			background-color: #f00;
+			border-radius: 10px;
+			cursor: pointer;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+	</style>
+</head>
+<body>
+	<!-- 直接使用浏览器自带的滚动条样式比较丑，调整样式有兼容性问题，此处用div样式模拟滚动条 -->
+	<div id="box">
+		<div id="content">
+			跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数，跳过个位数为3的数
+		</div>
+		<div id="scroll">
+			<div id="bar"></div>
+		</div>
+	</div>
+ 
+	<script>
+		var box = document.querySelector('#box');
+		var content = document.querySelector('#content');
+		var scroll = document.querySelector('#scroll');
+		var bar = document.querySelector('#bar');
+ 
+		// 内容的高度与滚动条的高度成反比
+		// 滚动条的高度 / scroll的高度 = box的高度 / content的高度
+		// offset 大小 = 元素大小 + padding + border
+		// client 大小 = 元素大小 + padding
+		// scroll 大小 = 内容大小 + padding
+		var barHeight = 0;
+        console.log(box);
+		if (box.clientHeight < content.scrollHeight) { // 盒子高度小于内容高度时才出现滚动条
+			barHeight = box.clientHeight * scroll.clientHeight / content.scrollHeight;
+		}
+		bar.style.height = barHeight + 'px';
+ 
+		// 拖拽滚动条
+		bar.onmousedown = function (e) {
+			e = e || window.event;
+			// 按下鼠标时，求鼠标在bar中的位置
+			var y = getPage(e).pageY - box.offsetTop - bar.offsetTop;
+			
+			document.onmousemove = function (e) { // 鼠标在整个文档上移动
+				e = e || window.event;
+				// 鼠标在页面上移动的时候，求bar的位置
+				var barY = getPage(e).pageY - box.offsetTop - y;
+				// 限制滚动条位置
+				barY = barY < 0 ? 0 : barY;
+				barY = barY > (scroll.clientHeight - bar.clientHeight) ? (scroll.clientHeight - bar.clientHeight) : barY;
+				bar.style.top = barY + 'px';
+				// 内容移动
+				// 滚动出去内容的距离 / 内容最大滚动出去的距离 = 滚动条的距离 / 最大滚动条的距离
+				// 内容最大滚动出去的距离
+				var contentMax = content.clientHeight - box.clientHeight;
+				// 最大滚动条的距离
+				var barMax = scroll.clientHeight - bar.clientHeight;
+				var contentY = contentMax * barY / barMax;
+				content.style.top = -contentY + 'px';
+			}
+		}
+		document.onmouseup = function () { // 鼠标弹起后在整个文档上不移动
+			document.onmousemove = null;
+		}
+	</script>
+</body>
+</html>

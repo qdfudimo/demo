@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <title>Document</title>
+
+  <style>
+    .wrapper {
+      display: flex;
+      border: 1px solid orangered;
+      padding: 10px;
+    }
+
+    .col {
+      border: 1px solid #808080;
+      height: 500px;
+      width: 200px;
+      margin: 0 10px;
+      padding: 10px;
+    }
+
+    .item {
+      border: 1px solid #808080;
+      margin: 5px 0;
+    }
+
+    .drag-up {
+      animation: dragup ease 0.1s 1;
+
+      animation-fill-mode: forwards;
+    }
+
+    .drag-down {
+      animation: dragdown ease 0.1s 1;
+
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes dragup {
+      from {
+        margin-top: 10px;
+      }
+
+      to {
+        margin-top: 50px;
+      }
+    }
+
+    @keyframes dragdown {
+      from {
+        margin-bottom: 10px;
+
+        margin-top: 50px;
+      }
+
+      to {
+        margin-bottom: 50px;
+
+        margin-top: 10px;
+      }
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    .choose {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <ul class="col1 col" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+      <li class="item" ondrag="drag_handler(event)" ondragstart="dragstart_handler(event);" id="item1" draggable="true"
+        ondragend="dragend_handler(event)">
+        item1
+      </li>
+
+      <li class="item" ondrag="drag_handler(event)" ondragstart="dragstart_handler(event);" id="item2" draggable="true"
+        ondragend="dragend_handler(event)">item2</li>
+      <li class="item" id="item3" draggable="true" ondrag="drag_handler(event)" ondragstart="dragstart_handler(event);"
+        ondragend="dragend_handler(event)">item3</li>
+    </ul>
+  </div>
+
+  <script>
+    let cols = document.getElementsByClassName("col");
+    for (let col of cols) {
+      col.ondragover = (e) => {
+        e.preventDefault();
+        // console.log(e.target);
+      };
+    }
+    var uls = document.querySelector('ul');
+    var offsetTop = uls.offsetTop;
+    var clientX = '';
+    var clientY = '';
+    var n = 0;
+
+    function dragstart_handler(ev) {
+      console.log("dragStart");
+      ev.target.setAttribute('id', 'test1');
+      // ev.target.setAttribute('class', 'choose');
+      ev.target.classList.add("choose")
+      ev.dataTransfer.setData("text/plain", ev.target.id);
+    }
+
+    function dragend_handler(ev) {
+      console.log("dragend");
+      ev.target.classList.remove("choose");
+      // ev.target.removeAttribute('style', 'background-color:transparent;');
+    }
+
+    function drag_handler(ev) {
+      console.log("drag");
+      // ev.target.removeAttribute('style', 'background-color:transparent;');
+    }
+
+    function drop_handler(ev) {
+      console.log("Drop");
+      ev.preventDefault();
+      // clientX = ev.clientX;
+      // clientY = ev.clientY;
+      // n = Math.round((clientY - offsetTop) / 52)
+      // var data = ev.dataTransfer.getData("text");
+      // console.log(n)
+      // var nodes = document.getElementById(data);
+      // uls.insertBefore(nodes, children(uls)[n]);
+      // nodes.removeAttribute('id');
+      ev.dataTransfer.clearData();
+    }
+
+    function dragover_handler(ev) {
+      ev.preventDefault();
+      clientX = ev.clientX;
+      clientY = ev.clientY;
+      n = Math.round((clientY - offsetTop) / 52) //52代指拖拽元素的高度    
+    }
+  </script>
+</body>
+
+</html>

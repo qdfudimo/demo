@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            list-style-type: disc;
+            margin-block-start: 0;
+            margin-block-end: 0;
+            margin-inline-start: 0;
+            margin-inline-end: 0;
+            padding-inline-start: 0;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        li {
+            height: 50px;
+            line-height: 50px;
+            border: 1px solid #aaaaaa;
+            width: 200px;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="drag" class="drag">
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+        <li>Item 5</li>
+    </ul>
+    <script>
+        const lis = document.querySelectorAll(".drag li");
+        let draggingElementOrder;
+        let draggingElement;
+        for (let i = 0; i < lis.length; i++) {
+            lis[i].setAttribute("draggable", true);
+            lis[i].addEventListener("dragstart", (event) => {
+                draggingElement = event.target;
+            });
+            lis[i].addEventListener("dragenter", (event) => {
+                console.log(event.target);
+                //每次都要新计算，因为有可能已经换位了
+                draggingElementOrder = Array.from(draggingElement.parentElement.children).indexOf(
+                    draggingElement);
+                const node = event.target;
+                draggingElementPosition = draggingElement.getBoundingClientRect();
+                const order = Array.from(node.parentElement.children).indexOf(node);
+                //从大的序号移入到小的序号
+                if (draggingElementOrder > order) {
+                    node.parentElement.insertBefore(draggingElement, node);
+                }
+                //从小的序号移入到大的序号
+                else {
+                    //节点不是最后一个
+                    if (node.nextElementSibling) {
+                        node.parentElement.insertBefore(draggingElement, node.nextElementSibling);
+                    }
+                    // 节点是最后一个了，不能再用insertBefore
+                    else {
+                        node.parentElement.appendChild(draggingElement);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

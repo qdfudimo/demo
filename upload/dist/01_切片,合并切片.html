@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=s, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.24.0/axios.min.js"></script>
+</head>
+
+<body>
+    <input type="file" id="fileInput">
+    <button id="uploadBtn">上传</button>
+</body>
+<script>
+    function file2Obj(file){
+        return {
+            ...file,
+            lastModified: file.lastModified,
+            lastModifiedDate: file.lastModifiedDate,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            uid: file.uid||1,
+            percent: 0,
+            originFileObj: file,
+        };
+    }
+    // 请求基准地址
+    axios.defaults.baseURL = 'http://localhost:3000'
+    // 选中的文件
+    var file = null
+    // 选择文件
+    document.getElementById('fileInput').onchange = function ({
+        target: {
+            files
+        }
+    }) {
+        file = files[0]
+        console.log(file);
+        file = file2Obj(file)
+        console.log(file);
+        let formData = new FormData()
+        formData.append('file', file)
+        axios({
+            method: 'post',
+            url: '/upload',
+            data: formData
+        })
+    }
+    // 开始上传
+    document.getElementById('uploadBtn').onclick = async function () {
+        if (!file) return
+        // 创建切片   
+        // let size = 1024 * 1024 * 10 //10MB 切片大小
+        let size = 1024 * 50 //50KB 切片大小
+        let fileChunks = []
+        let index = 0 //切片序号
+        for (let cur = 0; cur < file.size; cur += size) {
+            fileChunks.push({
+                hash: index++,
+                chunk: file.slice(cur, cur + size)
+            })
+        }
+        // 上传切片
+        const uploadList = fileChunks.map((item, index) => {
+            let formData = new FormData()
+            formData.append('filename', file.name)
+            formData.append('hash', item.hash)
+            formData.append('chunk', item.chunk)
+            return axios({
+                method: 'post',
+                url: '/upload',
+                data: formData
+            })
+        })
+        await Promise.all(uploadList)
+        // 合并切片
+        await axios({
+            method: 'get',
+            url: '/merge',
+            params: {
+                filename: file.name
+            }
+        });
+        console.log('上传完成')
+    }
+</script>
+
+</html>
