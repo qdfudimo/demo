@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #ccc;
+        }
+
+        img {
+            width: 400px;
+        }
+    </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="box" :style="`height:600px;overflow-y:scroll;`" @scroll="handleScroll">
+            <img class="img_box" v-for='i in clist' :key="i" src="./img/default.jpg" :data-src="i" />
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    clist: [
+                        "./img/1.jpg",
+                        "./img/2.jpg",
+                        "./img/3.jpg",
+                        "./img/4.jpg",
+                        "./img/5.jpg",
+                    ], // 页面展示数据
+                }
+            },
+            mounted() {
+                this.lazyLoadWithObserver()
+            },
+            methods: {
+                handleScroll(e) {},
+                lazyLoadWithObserver() {
+                    let observer = new IntersectionObserver((entries, observe) => {
+                        entries.forEach(item => {
+                            // 获取当前正在观察的元素
+                            let target = item.target
+                            if (item.isIntersecting && target.dataset.src) {
+                                target.src = target.dataset.src
+                                // 删除data-src属性
+                                target.removeAttribute('data-src')
+                                // 取消观察
+                                observe.unobserve(item.target)
+
+                            }
+                        })
+                    })
+
+                    let imgs = document.querySelectorAll('.img_box')
+                    imgs.forEach(item => {
+                        // 遍历观察元素
+                        observer.observe(item)
+                    })
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>
