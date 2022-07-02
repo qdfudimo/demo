@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button>按钮</button>
+    <script>
+        let btn = document.querySelector("button")
+        let woker = new Worker("worker.js")
+        btn.addEventListener("click", () => {
+            woker.postMessage("主线程发送信息");
+        })
+        woker.onmessage = (result) => {
+            console.log(result, "主线程");
+        }
+        // if (window.Worker) {
+        //     let worker = new Worker('./worker.js');
+        // } else {
+        //     console.log("呜呜呜，不支持 Web Worker");
+        // }
+        /***
+         * Uncaught DOMException: Failed to construct 'Worker': Script at 'file:///E:/vue/demo/worker.js'
+         *  cannot be accessed from origin 'null'.
+            at file:///E:/vue/demo/webWorker.html:23:26
+         * 需要服务打开 不能直接在浏览器中打开
+         * 
+        */
+    </script>
+</body>
+
+</html>

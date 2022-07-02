@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let currentRender = null
+
+        function reactive(source) {
+            let dep = null
+            return new Proxy(source, {
+                get: function (target, key, receiver) {
+                    dep = currentRender
+                    return Reflect.get(target, key, receiver)
+                },
+                set(target, key, value, receiver) {
+                    const result = Reflect.set(target, key, value, receiver)
+                    dep && dep()
+                    return result
+                }
+            })
+        }
+
+        const test = reactive({
+            num: 111,
+            obj: () => test.num //依赖num
+        })
+
+        function render() {
+            console.log('render 被执行', `<div>${test.obj()}</div>`)
+        }
+
+        currentRender = render
+        render()
+        currentRender = null
+
+        test.num = 2
+
+        // 最终输出结果
+        // log render 被执行 <div>111</div>
+        // log render 被执行 <div>2</div>
+    </script>
+</body>
+
+</html>
