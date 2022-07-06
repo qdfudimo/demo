@@ -58,7 +58,7 @@
             task.then((data) => {
                 //请求结束后将该Promise任务从并发池中移除
                 let index = pool.findIndex(t => t === task)
-                pool.splice(index)
+                pool.splice(index,1)
             }).catch(() => {
                 console.log("error");
             })
@@ -68,6 +68,7 @@
                 await Promise.race(pool)
             }
         }
+        await Promise.all(pool)
         //所有任务完成,合并切片
         await axios({
             method: 'get',

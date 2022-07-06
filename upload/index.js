@@ -12,7 +12,10 @@ const server = express()
 server.use(express.static(path.join(__dirname, './dist')))
 // 切片上传的接口
 server.post('/upload', (req, res) => {
-    const form = new multiparty.Form();
+    // 设置文件暂存地址
+    const form = new multiparty.Form({
+        uploadDir: './static/tmp'
+    });
     form.parse(req, function(err, fields, files) {
         let filename = fields.filename[0]
         let hash = fields.hash[0]
@@ -25,6 +28,7 @@ server.post('/upload', (req, res) => {
             const ws = fs.createWriteStream(`${dir}/${hash}`)
             ws.write(buffer)
             ws.close()
+            fs.unlinkSync(chunk.path);
             res.send(`${filename}-${hash} 切片上传成功`)
         } catch (error) {
             console.error(error)
@@ -47,6 +51,9 @@ server.get('/merge', async (req, res) => {
         const ws = fs.createWriteStream(`${STATIC_FILES}/${filename}`)
         ws.write(buffer);
         ws.close();
+        emptyDir(`${STATIC_TEMPORARY}/${filename}`)
+        //删除空文件夹
+        fs.rmdirSync(`${STATIC_TEMPORARY}/${filename}`)
         res.send(`切片合并完成`);
     } catch (error) {
         console.error(error);
@@ -56,3 +63,20 @@ server.get('/merge', async (req, res) => {
 server.listen(3000, _ => {
     console.log('http://localhost:3000/')
 })
+/**
+ * 删除文件夹下所有问价及将文件夹下所有文件清空
+ * @param {*} path 
+ */
+ function emptyDir(path) {
+    const files = fs.readdirSync(path);
+    files.forEach(file => {
+        const filePath = `${path}/${file}`;
+        const stats = fs.statSync(filePath);
+        if (stats.isDirectory()) {
+            emptyDir(filePath);
+        } else {
+            fs.unlinkSync(filePath);
+            console.log(`删除${file}文件成功`);
+        }
+    });
+}
