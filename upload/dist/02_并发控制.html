@@ -95,7 +95,7 @@
                 console.log(data);
                 //请求结束后将该Promise任务从并发池中移除
                 let index = pool.findIndex(t => t === task)
-                pool.splice(index)
+                pool.splice(index,1)
             })
             pool.push(task)
             if (pool.length === max) {
