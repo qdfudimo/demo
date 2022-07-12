@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input id="fileInput" type="file" />
+    <img id="img" src="" alt="" />
+    <img id="blobImg" src="" alt="" />
+  </body>
+  <script>
+    let fileId = document.getElementById("fileInput");
+    let img = document.getElementById("img");
+    fileId.onchange = function (e) {
+      console.log(e);
+      let file = e.target.files[0]; //file文件
+      fileToBase64(file, 0.92);
+    };
+
+    // 将file文件通过FileReader转化为base64格式
+    //FileReader 对象允许Web应用程序异步读取存储在用户计算机上的文件（或原始数据缓冲区）的内容，使用File或 Blob对象指定要读取的文件或数据。
+
+    const fileToBase64 = (file, quality) => {
+      //图片对象      图片质量
+      console.log("将file文件通过FileReader转化为base64格式");
+      let fileReader = new FileReader();
+      let type = file.type; //"image/png"
+      // 对文件进行读取
+      fileReader.readAsDataURL(file);
+      fileReader.onload = function (e) {
+        console.log("原始二进制字符串：", this.result.toString());
+        compress(fileReader.result, quality, type);
+      };
+    };
+
+    //   处理base64数据，通过canvas(toDataURL)进行压缩绘制，然后输出压缩后的base64图片数据
+    // 图片最大宽度
+    const MAX_WIDTH = 800;
+    const compress = (base64, quality, mimeType) => {
+      //mimeType 图片类型，例如 mimeType='image/png'
+      console.log(
+        "处理base64数据，通过canvas(toDataURL)进行压缩绘制，然后输出压缩后的base64图片数据"
+      );
+      let cvs = document.createElement("canvas");
+      let img = document.createElement("img");
+      // CORS 策略，会存在跨域问题
+      img.crossOrigin = "anonymous";
+      return new Promise((resolve, reject) => {
+        img.src = base64;
+        // 图片偏移值
+        let offetX = 0;
+        img.onload = () => {
+          if (img.width > MAX_WIDTH) {
+            // 做适配
+            cvs.width = MAX_WIDTH;
+            cvs.height = (img.height * MAX_WIDTH) / img.width;
+            offetX = (img.width - MAX_WIDTH) / 2;
+          } else {
+            cvs.width = img.width;
+            cvs.height = img.height;
+          }
+          // 重点！ 将图片插入画布并开始绘制
+          let ctx = cvs
+            .getContext("2d")
+            .drawImage(img, 0, 0, cvs.width, cvs.height);
+
+          let imageData = cvs.toDataURL(mimeType, quality);
+          console.log("canvas图片压缩", imageData);
+          // 我想转成blob格式看看
+          let blobData = converrVase64UrlToBlob(imageData, mimeType);
+          console.log("我想转成blob格式看看", blobData);
+          //利用FormData传输数据
+          // let formData = new window.FormData();
+          // formData.append("file", _blob);
+          resolve(imageData);
+        };
+      });
+    };
+
+    // base64数据转成blob文件流
+    const converrVase64UrlToBlob = (base64, mimeType) => {
+      //mimeType 图片类型，例如 mimeType='image/png'
+      console.log("base64数据转成blob文件流");
+      let bytes = window.atob(base64.split(",")[1]); //atob方法用于解码base64
+      // 创建一个长度为 bytes.length 的 buffer(一个二进制文件), 它会分配一个 16 字节（byte）的连续内存空间，并用 0 进行预填充。
+      let ab = new ArrayBuffer(bytes.length);
+
+      // Uint8Array —— 将 ArrayBuffer 中的每个字节视为 0 到 255 之间的单个数字（每个字节是 8 位）。这称为 “8 位无符号整数”。
+      let ia = new Uint8Array(ab);
+      for (let i = 0; i < bytes.length; i++) {
+        // 更改里面的初始化内容
+        ia[i] = bytes.charCodeAt(i);
+      }
+      // 创建blob格式数据，并传入二进制文件和文件原本类型
+      let _blob = new Blob([ia], { type: mimeType });
+      toImg(_blob);
+      return _blob;
+    };
+
+    // 尝试操作成功转化的blob文件
+    // 利用createObjectURL转化为DataUrl格式
+    const toImg = function (blobObj) {
+      console.log("尝试操作成功转化的blob文件");
+      // 两种方法都可以将Blob数据转化为DataUrl格式
+      let imgSrc = window.URL.createObjectURL(blobObj);
+      //let imgSrc = window.webkitURL.createObjectURL(blobObj);
+      document.getElementById("blobImg").src = imgSrc;
+    };
+  </script>
+</html>
