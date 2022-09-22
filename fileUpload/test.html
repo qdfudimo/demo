@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        class RefImpl {
+            constructor(value) {
+                this._rawValue = value;
+                // 看看value 是不是一个对象，如果是一个对象的话
+                // 那么需要用 reactive 包裹一下
+                this._value = value;
+            }
+
+            get value() {
+                // 收集依赖
+                console.log("获取值了");
+                return this._value;
+            }
+
+            set value(newValue) {
+                // 当新的值不等于老的值的话，
+                // 那么才需要触发依赖
+                if (hasChanged(newValue, this._rawValue)) {
+                    console.log("触发更新机制了");
+                    // 更新值
+                    this._value = newValue;
+                    this._rawValue = newValue;
+                    // 触发依赖
+                }
+            }
+        }
+
+        function convert(value) {
+            return isObject(value) ? reactive(value) : value;
+        }
+
+        function hasChanged(value, oldValue) {
+            return !Object.is(value, oldValue);
+        }
+
+        function ref(value) {
+            const refImpl = new RefImpl(value);
+            return refImpl;
+        }
+        let num = ref("888");
+        console.log(num.value);
+        num.value = 9999
+        console.log(num);
+    </script>
+</body>
+
+</html>
