@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div {
+            background: rebeccapurple;
+            line-height: 30px;
+            padding: 0 20px;
+            color: #fff;
+            border-radius: 5px;
+            margin: 60px auto;
+            width: 200px;
+        }
+
+        div {
+            position: relative;
+        }
+
+        div::after,
+        div::before {
+            content: "";
+            border: 2px solid rebeccapurple;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            /* clip-path: inset(96% 0 0 0); */
+            animation: clippath 3s infinite linear;
+        }
+
+        div::before {
+            animation: clippath 3s infinite -1.5s linear;
+        }
+
+        @keyframes clippath {
+
+            0%,
+            100% {
+                clip-path: inset(0 0 96% 0);
+            }
+
+            25% {
+                clip-path: inset(0 0 0 96%);
+            }
+
+            50% {
+                clip-path: inset(96% 0 0 0);
+            }
+
+            75% {
+                clip-path: inset(0 96% 0 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div>我在这里啊</div>
+</body>
+
+</html>

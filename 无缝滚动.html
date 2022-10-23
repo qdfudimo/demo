@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .water_tips {
+            width: fit-content;
+            overflow: hidden;
+            position: relative;
+            animation-name: seamless-scrolling;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-duration: 4s;
+            white-space: nowrap;
+
+        }
+        .containers {
+            width: 400px;
+            border: 1px solid #ccc;
+        }
+        .water_text {
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        @keyframes seamless-scrolling {
+            0% {
+                transform: translateX(0px);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="containers common">
+        <div class="water_tips" :style="`animation-duration: 10s;`">
+            <span class="water_text scroll1">暂无数据||暂无数据暂无数据||暂无数据||暂无数据||暂无数据||暂无数据||</span>
+            <span class="water_text scroll2">暂无数据||暂无数据暂无数据||暂无数据||暂无数据||暂无数据||暂无数据||</span>
+        </div>
+    </div>
+</body>
+
+</html>
