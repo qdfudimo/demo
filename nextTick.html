@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button>
+        点击一下
+    </button>
+    <script>
+        let btn = document.querySelector("button")
+        btn.addEventListener("click", function (e) {
+            obj.b = 2
+            queueWatcher(obj)
+            objq.b = "这是我写的"
+            queueWatcher(objq)
+        })
+        let obj = {
+            a: 1
+        }
+        let objq = {
+            abc: 133,
+            // b: "这时候假的"
+        }
+        let queue = [];
+        let callbacks = [];
+        let pending = false;
+
+        function flushSchedulerQueue() {
+            for (let index = 0; index < queue.length; index++) {
+                //   调用watcher的run方法 执行真正的更新操作
+                console.log(queue[index].b);
+            }
+            // 执行完之后清空队列
+            queue = [];
+        }
+
+        // 实现异步队列机制
+        function queueWatcher(watcher) {
+            queue.push(watcher);
+            // 进行异步调用
+            nextTick(flushSchedulerQueue);
+        }
+
+        function flushCallbacks() {
+            pending = false; //把标志还原为false
+            // 依次执行回调
+            for (let i = 0; i < callbacks.length; i++) {
+                callbacks[i]();
+            }
+        }
+
+        let timerFunc; //定义异步方法  采用优雅降级
+        if (typeof Promise !== "undefined") {
+            // 如果支持promise
+            const p = Promise.resolve();
+            timerFunc = () => {
+                p.then(flushCallbacks);
+            };
+        }
+
+        function nextTick(cb) {
+            // 除了渲染watcher  还有用户自己手动调用的nextTick 一起被收集到数组
+            callbacks.push(cb);
+            if (!pending) {
+                // 如果多次调用nextTick  只会执行一次异步 等异步队列清空之后再把标志变为false
+                pending = true;
+                timerFunc();
+            }
+        }
+    </script>
+</body>
+
+</html>
