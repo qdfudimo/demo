@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        div {
+        .div {
             background: rebeccapurple;
             line-height: 30px;
             padding: 0 20px;
@@ -17,12 +17,12 @@
             width: 200px;
         }
 
-        div {
+        .div {
             position: relative;
         }
 
-        div::after,
-        div::before {
+        .div::after,
+        .div::before {
             content: "";
             border: 2px solid rebeccapurple;
             position: absolute;
@@ -34,7 +34,7 @@
             animation: clippath 3s infinite linear;
         }
 
-        div::before {
+        .div::before {
             animation: clippath 3s infinite -1.5s linear;
         }
 
@@ -57,11 +57,27 @@
                 clip-path: inset(0 96% 0 0);
             }
         }
+
+        .g-container {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            overflow: hidden;
+            transition: clip-path .3s linear;
+            /* clip-path: circle(20px at 44px 44px); */
+            background: #3c3;
+            clip-path: circle(460px at 44px 44px);
+        }
+
+        .g-container:hover {
+            clip-path: circle(460px at 44px 44px);
+        }
     </style>
 </head>
 
 <body>
-    <div>我在这里啊</div>
+    <div class="div">我在这里啊</div>
+    <div class="g-container"></div>
 </body>
 
 </html>
