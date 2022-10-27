@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .num {
+            display: inline-block;
+            line-height: 1;
+            -webkit-text-fill-color: transparent;
+            font-family: system-ui;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            font-size: 40px;
+            /* background-color: aquamarine; */
+        }
+
+        .num::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: currentColor;
+        }
+
+        .num0::before {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 60% 100%, 60% 80%, 60% 20%, 40% 20%, 40% 80%, 60% 80%, 60% 100%, 0% 100%);
+
+        }
+        .num1::before {
+            clip-path: polygon(30% 0, 70% 0,70% 100%, 30% 100%);
+
+        }
+        .num2::before {
+            clip-path: polygon(0 0 ,100% 0,100% 60%,50% 60%,50% 80%,100% 80%,100% 100%,0 100%, 0 40%,50% 40%,50% 20%,0 20% );
+
+        }
+
+        /* inset 属性用作定位元素的 top、right、bottom、left 这些属性的简写。
+        类似于 margin 和 padding 属性，依照“上右下左”的顺序。举个例子： */
+        /* inset: 0;  */
+        /* 等同于 `top: 0; right: 0; bottom: 0; left: 0;` */
+        /* inset: 1px 2px;  */
+        /* 等同于 `top: 1px; right: 2px; bottom: 1px; left: 2px;` */
+        /* inset: 1px 2px 3px;  */
+        /* 等同于 `top: 1px; right: 2px; bottom: 3px; left: 2px;` */
+        /* inset: 1px 2px 3px 4px;  */
+        /* 等同于 `top: 1px; right: 2px; bottom: 3px; left: 4px;` */
+    </style>
+</head>
+
+<body>
+    <div class="num num0">0</div>
+    <div class="num num1">1</div>
+    <div class="num num2">2</div>
+</body>
+
+</html>
