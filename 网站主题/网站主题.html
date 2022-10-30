@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./var.css">
+</head>
+
+<body>
+    <div class="container">
+        <span class="text">主题字体颜色</span>
+    </div>
+    <span>背景颜色</span>
+    <ul>
+        <li data-type="background" data-color="rgb(23, 30, 30)" style="background-color:rgb(23, 30, 30) ;"></li>
+        <li data-type="background" data-color="rgb(0, 150, 136)" style="background-color:rgb(0, 150, 136) ;"></li>
+        <li data-type="background" data-color="rgb(83, 109, 254)" style="background-color:rgb(83, 109, 254) ;"></li>
+        <li data-type="background" data-color="rgb(255, 92, 147)" style="background-color:rgb(255, 92, 147) ;"></li>
+        <!-- <li data-color="rgb(255, 255, 255)" style="background-color:rgb(255, 255, 255) ;"></li> -->
+    </ul>
+    <span>字体颜色</span>
+    <ol>
+        <li data-type="text" data-color="rgb(207, 146, 33)" style="background-color:rgb(207, 146, 33) ;"></li>
+        <li data-type="text" data-color="rgb(115, 213, 69)" style="background-color:rgb(115, 213, 69) ;"></li>
+        <li data-type="text" data-color="rgb(203, 49, 238)" style="background-color:rgb(203, 49, 238) ;"></li>
+        <li data-type="text" data-color="rgb(247, 232, 232)" style="background-color:rgb(247, 232, 232);"></li>
+    </ol>
+    <script>
+        let ul = document.querySelector("ul");
+        let ol = document.querySelector("ol");
+        let currentColor;
+        ul.addEventListener("click", (e) => {
+            // console.log(e.target.dataset.color);
+            let color = e.target.dataset.color||"rgb(23, 30, 30)"
+            let type = e.target.dataset.type;
+            console.log(e);
+            let prop = type == "text" ? "--container-text-color" : "--container-bg-color"
+            setCssVar(prop, color)
+        })
+        ol.addEventListener("click", (e) => {
+            // console.log(e.target.dataset.color);
+            let color = e.target.dataset.color||"rgb(23, 30, 30)"
+            let type = e.target.dataset.type;
+            console.log(e);
+            let prop = type == "text" ? "--container-text-color" : "--container-bg-color"
+            setCssVar(prop, color)
+        })
+        const setCssVar = (prop, val, dom = document.documentElement) => {
+            dom.style.setProperty(prop, val)
+        }
+        // let div1 = document.getElementById('div1')
+        // div1.setAttribute('class', 'active')
+        // div1.classList.add('active')
+        // div1.className('active')
+        //document.getElementById("myDIV").classList.remove("mystyle");
+        //document.getElementById("myDIV").classList.remove("mystyle", "anotherClass", "thirdClass");
+        //document.getElementById("myDIV").classList.toggle("newClassName");
+    </script>
+</body>
+
+</html>
