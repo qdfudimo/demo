@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>outline</title>
+    <style>
+        .box {
+            width: 160px;
+            height: 160px;
+            background-color: yellowgreen;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hsla {
+            border: 10px solid hsla(0, 0%, 100%, .5);
+            background: white;
+            background-clip: padding-box;
+            width: 100px;
+            height: 100px;
+            color: #000;
+        }
+        .outline-offset {
+            margin: 20px;
+            width: 150px;
+            padding: 10px;
+            height: 70px;
+            border: 10px solid black;
+            outline: 10px dashed red;
+            outline-offset: 2px;
+        }
+
+        #example1 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+        }
+
+        #example2 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+            background-clip: padding-box;
+        }
+
+        #example3 {
+            border: 10px dotted black;
+            padding: 35px;
+            background: yellow;
+            background-clip: content-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box"><div class="hsla">试试试试hsla</div></div>
+    <p><b>注意:</b> Internet Explorer 不兼容 outline-offset属性.</p>
+
+    <div class="outline-offset">这个 div有一个轮廓边界15 px边境外的边缘。</div>
+    <p>没有背景剪裁 (border-box没有定义):</p>
+    <div id="example1">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+
+    <p>background-clip: padding-box:</p>
+    <div id="example2">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+
+    <p>background-clip: content-box:</p>
+    <div id="example3">
+        <h2>Lorem Ipsum Dolor</h2>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
+            dolore magna aliquam erat volutpat.</p>
+    </div>
+</body>
+
+</html>
