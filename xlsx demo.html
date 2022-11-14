@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // 经过评论反馈优化
+        function getCellWidth(value) {
+            // 判断是否为null或undefined
+            if (value == null) {
+                return 10;
+            } else if (/.*[\u4e00-\u9fa5]+.*$/.test(value)) {
+                // 中文的长度
+                const chineseLength = value.match(/[\u4e00-\u9fa5]/g).length;
+                // 其他不是中文的长度
+                const otherLength = value.length - chineseLength;
+                return chineseLength * 2.1 + otherLength * 1.1;
+            } else {
+                return value.toString().length * 1.1;
+                /* 另一种方案
+                value = value.toString()
+                return value.replace(/[\u0391-\uFFE5]/g, 'aa').length
+                */
+            }
+        }
+
+        /**
+         * 将table、json数据导出为excel
+         * @param {object} options 
+         * @param {[]} options.data 数据源
+         * @param {"table"|"json"|"aoe"} options.dataType 数据类型 
+         * @param {string} options.sheetName sheet名称
+         * @param {boolean} options.saveFile 是否保存为文件，如果为false则返回workBook
+         * @param {string} options.fileName 文件名称
+         * @param {boolean} options.fitWidth是否自适应列宽(如果dataType="json",配置此属性将无效)
+         * @param {[]} options.header xlsx内部参数
+         */
+        function exportTo(
+            data = [],
+            dataType = 'table',
+            sheetName = 'Sheet1',
+            saveFile = true,
+            fileName = "班级表" + +new Date() + '.xlsx',
+            fitWidth = true,
+            header = []
+        ) {
+            try {
+                if (!XLSX) throw 'exportTo: the plug-in "XLSX" is undefined.'
+                if (!data || data.length === 0) throw 'exportTo: data is null or undefined.'
+                let sheet = {}
+                switch (dataType) {
+                    case 'table':
+                        sheet = XLSX.utils.table_to_sheet(data, {
+                            raw: true
+                        })
+                        break
+                    case 'json':
+                        sheet = XLSX.utils.json_to_sheet(data, {
+                            skipHeader: true
+                        })
+                        if (fitWidth) {
+                            let colWidths = []
+                            sheet['!cols'] = []
+                            data.forEach((row) => {
+                                // 列序号
+                                let index = 0
+                                // 遍历列
+                                for (const key in row) {
+                                    let width = getCellWidth(row[key]).toFixed(
+                                        1) || 0
+                                    if (sheet['!cols'][index] === undefined) {
+                                        sheet['!cols'][index] = {
+                                            wch: width
+                                        }
+                                        console.log(width, index);
+                                    } else {
+                                        sheet['!cols'][index].wch = Math.max(sheet['!cols'][index].wch, width)
+                                    }
+                                    index++
+                                }
+                            })
+                        }
+                        break
+                    case 'aoe':
+                        // 未实现
+                        sheet = []
+                        break
+                }
+                sheet["!merges"] = [{
+                    s: {
+                        r: 0,
+                        c: 0
+                    },
+                    e: {
+                        r: 0,
+                        c: 2
+                    }
+                }]
+                let workBook = {
+                    SheetNames: [sheetName],
+                    Sheets: {
+                        [sheetName]: sheet
+                    }
+                }
+                console.log(workBook);
+                if (saveFile) {
+                    XLSX.writeFile(workBook, fileName)
+                    return true
+                } else {
+                    return workBook
+                }
+            } catch (error) {
+                console.error('exportTo: ', error)
+                throw error
+            }
+        }
+        let tableData = [
+            ["姓名", "", "", "时间"],
+            ["张飞是", "20", "2班", "2022-11-14 21:38"],
+            ["姓名张飞是你大哥", "20", "班级3班", "2022-11-10"],
+            ["小飞飞阳阳", "1", "班级1682班", "wu"],
+            ["小飞飞阳阳小小鸡公煲在这里", "1000", "班级16822222班", "wu11"],
+        ]
+        exportTo(tableData, "json")
+    </script>
+</body>
+
+</html>
