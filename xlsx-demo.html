@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <input type="file" id="file" />
     <script>
         // 经过评论反馈优化
         function getCellWidth(value) {
@@ -129,6 +130,62 @@
             ["小飞飞阳阳小小鸡公煲在这里", "1000", "班级16822222班", "wu11"],
         ]
         exportTo(tableData, "json")
+  let file = document.getElementById("file")
+        let keys = ["class", "name", "phone"]
+        file.addEventListener("change", function (e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                // console.log(e.target.result instanceof ArrayBuffer);
+                // var data = e.target.result
+                var data = new Uint8Array(e.target.result);
+                /* reader.readAsArrayBuffer(file) -> data will be an ArrayBuffer */
+                var workbook = XLSX.read(data, {
+                    type: "array"
+                });
+                console.log(workbook);
+                let SheetNames = workbook.SheetNames;
+                let result = {}
+                for (let i = 0; i < SheetNames.length; i++) {
+                    result[SheetNames[i]] = []
+                    let current = workbook.Sheets[SheetNames[i]]
+                    //sheet_to_json 方法的第二个参数中设置  
+                    //defval  字段，对空数据设置默认值
+                    //range：设置从第几行开始读取内容
+                    //header A:就是每个key值为ABC 1:就是每项都是数组 ,没有key值
+                    let json = XLSX.utils.sheet_to_json(workbook.Sheets[SheetNames[i]], {
+                        range: 1,
+                        header: keys,
+                        // defval: '默认值'
+                    })
+                    result[SheetNames[i]].push(json)
+                }
+                console.log(result);
+                /* DO SOMETHING WITH workbook HERE */
+            };
+            reader.readAsArrayBuffer(file)
+        })
+        var ws = XLSX.utils.json_to_sheet([{
+            1: "S",
+            2: "h",
+            3: "e",
+            4: "e",
+            5: "t",
+            6: "J",
+            7: "S"
+        },{
+            1: "S1",
+            2: "h1",
+            3: "e1",
+            4: "e1",
+            5: "t1",
+            6: "J1",
+            7: "S1"
+        }], {
+            // header: ["A", "B", "C", "D", "E", "F", "G"],
+            skipHeader: true
+        });
+        console.log(ws);
     </script>
 </body>
 
