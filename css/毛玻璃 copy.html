@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --img: 'https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=';
+        }
+
+       .img {
+            width: 600px;
+            height: 400px;
+            /* background: url("https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=") no-repeat center; */
+            background-image: url("https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: top;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .bg {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: auto;
+            /* border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, .5); */
+
+        }
+
+        .bg::after {
+            position: absolute;
+            content: "";
+            background-image: url("https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: top;
+            /* background: url("https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=") no-repeat center; */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* filter: blur(10px); */
+            z-index: 0;
+        }
+
+        p {
+            position: relative;
+            color: #fff;
+            z-index: 10;
+            font-size: 16px;
+
+        }
+    </style>
+</head>
+
+<body>
+  <div class="img">
+    <div class="bg">
+        <p>
+            background-attachment: fixed <br />
+            + <br />
+            filter: bulr() <br />
+            实现毛玻璃效果
+        </p>
+    </div>
+  </div>
+</body>
+
+</html>
