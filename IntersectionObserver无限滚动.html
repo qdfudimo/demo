@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            width: 200px;
+            height: 300px;
+            border: 2px solid #ccc;
+            overflow-y: auto;
+        }
+
+        .loading {
+            width: 100%;
+            background-color: yellowgreen;
+            padding: 4px;
+            box-sizing: border-box;
+
+        }
+
+        .list {
+            width: 100%;
+            margin: 6px 0;
+            box-sizing: border-box;
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div v-for="item in list" :key="item" class="list">{{item}}</div>
+            <div class="loading" ref="loading">加载中</div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.global.js"></script>
+    <script>
+        let {
+            createApp,
+            onMounted,
+            ref,
+            reactive
+        } = Vue
+        let createList = function (index) {
+            let ary = []
+            for (let i = index; i < index + 10; i++) {
+                ary.push('index' + i)
+            }
+            return ary
+        }
+        createApp({
+            setup() {
+                const loading = ref("")
+                const list = ref([])
+                const loadingDone = ref(false)
+                const page = reactive({
+                    total: 0,
+                    pageSize: 10,
+                    pageNo: 1
+                })
+                onMounted(() => {
+
+                    loading.value && observe.observe(loading.value)
+                })
+                let observe = new IntersectionObserver(entries => {
+                        console.log(entries);
+                        // if(entries[0].intersectionRatio === 0) return
+                        if (entries[0].isIntersecting&&!loadingDone.value) {
+                            request()
+                            console.log("进入了",page.pageNo);
+                        }
+                    },
+                    // {
+                    //     root: this.rootNode || null, // 交叉窗口、根元素
+                    //     rootMargin: '0px', // 交叉窗口边界扩展或者伸缩
+                    //     threshold: [0.8] // 交叉占比（0～1），达到该比例才触发回调
+                    // }
+                )
+                const request = () => {
+                    loadingDone.value = true
+                    page.pageNo += 1
+                    setTimeout(() => {
+                        console.log(1111111);
+                        loadingDone.value = false
+                        list.value = list.value.concat(createList(list.value.length - 1))
+                    }, 2000)
+                }
+                return {
+                    loading,
+                    list,
+                    page
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+
+</html>
