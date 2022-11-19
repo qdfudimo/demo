@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .bg {
+            height: 90px;
+            width: 65px;
+            background-image: url(./space-to-top.png);
+            background-position: -40px -44px;
+            border: 1px solid #ccc;
+            animation: move .6s steps(7) infinite ;
+        }
+        @keyframes move {
+            0%{
+                background-position-x: -40px;
+            }
+            100% {
+                background-position-x: -1040px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg"></div>
+</body>
+
+</html>
