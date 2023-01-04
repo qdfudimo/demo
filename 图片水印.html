@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <input type="file" id="file" /><br /><br />
+        <canvas id="canvas" />
+    </div>
+    <script>
+        const fileInput = document.getElementById("file")
+        console.log(fileInput);
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const filePath = window.URL.createObjectURL(file);
+            const img = new Image();
+            img.src = filePath;
+            img.onload = () => {
+                const newFile = addWaterMark(img, file.name);
+                console.log(newFile);
+            }
+        })
+        const addWaterMark = (img, fileName) => {
+            const canvas = document.getElementById('canvas');
+            const imgWidth = img.width;
+            const imgHeight = img.height;
+            canvas.width = imgWidth;
+            canvas.height = imgHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            // 平铺水印
+            const canvasWater = document.createElement('canvas');
+            const waterMarkSize = 200; // 水印大小
+            canvasWater.width = waterMarkSize;
+            canvasWater.height = waterMarkSize;
+            const ctxWater = canvasWater.getContext('2d');
+            ctxWater.textAlign = 'left';
+            ctxWater.textBaseline = 'top';
+            ctxWater.font = '12px Microsoft Yahei';
+            ctxWater.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctxWater.rotate(-20 * Math.PI / 180);
+            // ctxWater.fillText('橙某人', 60, 80);
+            ctxWater.fillText('2022年11月22日 09:22:30', -60, 100);
+            ctx.fillStyle = ctx.createPattern(canvasWater, 'repeat');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const base64 = canvas.toDataURL('image/jpeg', 0.8)
+            return dataURLtoBlob(base64, fileName)
+        }
+        // base64转文件对象
+        const dataURLtoBlob = (dataurl, name) => {
+            const arr = dataurl.split(',')
+            const mime = arr[0].match(/:(.*?);/)[1]
+            const bstr = atob(arr[1])
+            let n = bstr.length
+            const u8arr = new Uint8Array(n)
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n)
+            }
+            return new File([u8arr], name, {
+                type: mime
+            })
+        }
+    </script>
+</body>
+
+</html>
