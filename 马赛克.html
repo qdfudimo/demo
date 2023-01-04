@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d0b4e30cd0f648fcbe675992ddcb90f1~tplv-k3u1fbpfcp-watermark.image?"
+        id="image" />
+    <script>
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
+        let img = document.getElementById("image");
+        let img1 = new Image();
+
+        getBase64(document.getElementById("image").src).then((res) => {
+            img1.src = res;
+        });
+
+        img1.onload = function () {
+            let w = img1.width;
+            let h = img1.height;
+            console.log(w,h);
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(img1, 0, 0);
+
+            let pixeArr = ctx.getImageData(0, 0, w, h).data;
+            let sampleSize = 40;
+            console.log(pixeArr);
+            for (let i = 0; i < h; i += sampleSize) {
+                for (let j = 0; j < w; j += sampleSize) {
+                    let p = (j + i * w) * 4;
+                    console.log(i,j,w,p);
+                    ctx.fillStyle =
+                        "rgba(" +
+                        pixeArr[p] +
+                        "," +
+                        pixeArr[p + 1] +
+                        "," +
+                        pixeArr[p + 2] +
+                        "," +
+                        pixeArr[p + 3] +
+                        ")";
+                    ctx.fillRect(j, i, sampleSize, sampleSize);
+                }
+            }
+            //img.src = canvas.toDataURL("image/jpeg");
+            let img2 = new Image();
+            img2.src = canvas.toDataURL("image/jpeg");
+            img2.width = img.width;
+            img2.height = img.height;
+            document.body.appendChild(img2);
+        };
+        function getBase64(imgUrl) {
+            return new Promise(function (resolve, reject) {
+                window.URL = window.URL || window.webkitURL;
+                let xhr = new XMLHttpRequest();
+                xhr.open("get", imgUrl, true);
+                xhr.responseType = "blob";
+                xhr.onload = function () {
+                    if (this.status == 200) {
+                        let blob = this.response;
+                        let oFileReader = new FileReader();
+                        oFileReader.onloadend = function (e) {
+                            let base64 = e.target.result;
+                            resolve(base64);
+                        };
+                        oFileReader.readAsDataURL(blob);
+                    }
+                };
+                xhr.send();
+            });
+        }
+    </script>
+</body>
+
+</html>
