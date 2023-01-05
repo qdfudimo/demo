@@ -6,68 +6,141 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .div {
+            width: 1000px;
+            height: 1000px;
+            border: 1px solid #000;
+            /* background-size:100%; */
+            background-repeat: no-repeat;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 
 <body>
-    <div>
-        <input type="file" id="file" /><br /><br />
-        <canvas id="canvas" />
+    <div id="app">
+        <input type="file" @change="upload" /><br /><br />
+        <canvas id="canvas"></canvas>
+        <div v-if="defaultImg" class="div" :style="{'background-image': 'url(' + defaultImg + ')'}"></div>
     </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.global.js"></script>
     <script>
-        const fileInput = document.getElementById("file")
-        console.log(fileInput);
-        fileInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const filePath = window.URL.createObjectURL(file);
-            const img = new Image();
-            img.src = filePath;
-            img.onload = () => {
-                const newFile = addWaterMark(img, file.name);
-                console.log(newFile);
-            }
-        })
-        const addWaterMark = (img, fileName) => {
-            const canvas = document.getElementById('canvas');
-            const imgWidth = img.width;
-            const imgHeight = img.height;
-            canvas.width = imgWidth;
-            canvas.height = imgHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            // 平铺水印
-            const canvasWater = document.createElement('canvas');
-            const waterMarkSize = 200; // 水印大小
-            canvasWater.width = waterMarkSize;
-            canvasWater.height = waterMarkSize;
-            const ctxWater = canvasWater.getContext('2d');
-            ctxWater.textAlign = 'left';
-            ctxWater.textBaseline = 'top';
-            ctxWater.font = '12px Microsoft Yahei';
-            ctxWater.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            ctxWater.rotate(-20 * Math.PI / 180);
-            // ctxWater.fillText('橙某人', 60, 80);
-            ctxWater.fillText('2022年11月22日 09:22:30', -60, 100);
-            ctx.fillStyle = ctx.createPattern(canvasWater, 'repeat');
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let {
+            createApp,
+            onMounted,
+            ref,
+            reactive
+        } = Vue
+        createApp({
+            setup() {
+                const defaultImg = ref("")
+                const upload = (e) => {
+                    console.log(e);
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const filePath = window.URL.createObjectURL(file);
+                    // 创建文件的临时路径: blob:http://localhost:8081/0cd115e2-9d4a-4c67-a86b-77e84d6f61db
+                    const img = new Image();
+                    img.src = filePath;
+                    img.onload = () => {
+                        // addWaterMark(img);
+                    }
+                }
+                onMounted(() => {
+                    addWaterMark1()
+                })
+                const addWaterMark = (img, fileName) => {
+                    const canvas = document.getElementById('canvas');
+                    // const imgWidth = img.width;
+                    // const imgHeight = img.height;
+                    canvas.width = 600;
+                    canvas.height = 400;
+                    const ctx = canvas.getContext('2d');
+                    // ctx.drawImage(img, 0, 0);
+                    // 平铺水印
+                    const canvasWater = document.createElement('canvas');
+                    const waterMarkSize = 100; // 水印大小
+                    canvasWater.width = waterMarkSize * 1.6;
+                    canvasWater.height = waterMarkSize;
+                    const ctxWater = canvasWater.getContext('2d');
+                    ctxWater.textAlign = 'left';
+                    ctxWater.textBaseline = 'top';
+                    ctxWater.font = '12px Microsoft Yahei';
+                    ctxWater.fillStyle = 'rgba(0, 0, 255, 0.3)';
+                    ctxWater.rotate(-20 * Math.PI / 180);
+                    // ctxWater.fillText('橙某人', 60, 80);
+                    // console.log(ctx.measureText(name).width;);
+                    ctxWater.fillText('18351867153', -10, 60);
+                    ctx.fillStyle = ctx.createPattern(canvasWater, 'repeat');
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const base64 = canvas.toDataURL('image/jpeg', 0.8)
-            return dataURLtoBlob(base64, fileName)
-        }
-        // base64转文件对象
-        const dataURLtoBlob = (dataurl, name) => {
-            const arr = dataurl.split(',')
-            const mime = arr[0].match(/:(.*?);/)[1]
-            const bstr = atob(arr[1])
-            let n = bstr.length
-            const u8arr = new Uint8Array(n)
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n)
+                    const base64 = canvas.toDataURL('image/png', 0.8)
+                    console.log(base64);
+                    defaultImg.value = base64
+                    // return dataURLtoBlob(base64, fileName)
+                }
+                const addWaterMark1 = (img, fileName) => {
+                    const canvas = document.getElementById('canvas');
+                    const imgWidth = 600;
+                    const imgHeight = 400;
+                    canvas.width = 600;
+                    canvas.height = 400;
+                    const ctx = canvas.getContext('2d');
+                    // ctx.drawImage(img, 0, 0);
+                    // 平铺水印
+                    // 画笔样式
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                    ctx.font = '12px Microsoft Yahei';
+                    ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+                    // 平铺水印
+                    const name = '18351867153';
+                    const waterMarkerWidth = ctx.measureText(name).width;
+                    const height = 80;
+                    const width = waterMarkerWidth + 60;
+                    let i = 0;
+                    let j = 0;
+                    console.log(waterMarkerWidth);
+                    ctx.rotate(-20 * Math.PI / 180);
+                    for (i = 0; i <= imgHeight / height + 100; i++) {
+                        for (j = 0; j <= imgWidth / width + 100; j++) {
+                            // const x = j * width;
+                            const y = i * height + 20;
+                            let x = -Math.tan(20 * (Math.PI / 180)) * y + j * width;
+                            if (!((i + 1) % 2)) {
+                                x = -Math.tan(20 * (Math.PI / 180)) * y + j * width - 40;
+                            }
+                            ctx.fillText(name, x, y);
+                        }
+                    }
+                    const base64 = canvas.toDataURL('image/png', 0.8)
+                    defaultImg.value = base64
+                    // return dataURLtoBlob(base64, fileName)
+                }
+                // base64转文件对象
+                const dataURLtoBlob = (dataurl, name) => {
+                    const arr = dataurl.split(',')
+                    const mime = arr[0].match(/:(.*?);/)[1]
+                    const bstr = atob(arr[1])
+                    let n = bstr.length
+                    const u8arr = new Uint8Array(n)
+                    while (n--) {
+                        u8arr[n] = bstr.charCodeAt(n)
+                    }
+                    return new File([u8arr], name, {
+                        type: mime
+                    })
+                }
+                return {
+                    defaultImg,
+                    upload
+                }
             }
-            return new File([u8arr], name, {
-                type: mime
-            })
-        }
+        }).mount("#app")
     </script>
 </body>
 
