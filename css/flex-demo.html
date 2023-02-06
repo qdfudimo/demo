@@ -15,7 +15,7 @@
             height: 100px;
         }
     
-        .item-1 {
+        /* .item-1 {
             width: 140px;
             flex: 2 1 10%;
             background: blue;
@@ -30,8 +30,8 @@
         .item-3 {
             flex: 1 1 200px;
             background: lightblue;
-        }
-        /* .item-1 {
+        } */
+        .item-1 {
             width: 140px;
             flex: 2 1 10%;
             background: blue;
@@ -39,17 +39,17 @@
     
         .item-2 {
             width: auto;
-            flex: 2 1 5%;
+            flex: 2 3 5%;
             background: darkblue;
         }
     
         .item-3 {
-            flex: 1 1 600px;
+            flex: 1 2 600px;
             background: lightblue;
-        } */
+        }
         /* 
             600+ 60 +30 = 690
-            600 - (90*(600/(60+30+600)))
+            600 - (90*(600*2/(60*1+30*3+600*2)))
             缩小的情况也是先根据flex-basis的值计算出容器超出容器多少空间，
             但是其不是简单的根据flex-shrink的值计算出缩放比例，
             而是根据容器中某个元素的flex-basis值乘以flex-shrink的值占容器中所有子元素的flex-basis乘以flex-shrink的值之和来计算缩放比例的。
