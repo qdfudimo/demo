@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>index.html</title>
+  <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+
+<script>
+  // 加载完成后就发起请求
+  $(function () {
+    let btn = document.querySelector("button")
+    console.log(btn);
+    btn.addEventListener("click", (e) => {
+      test()
+    })
+  })
+
+  function test() {
+    // 请求的路径	
+    var url = "/api/test";
+    $.ajax({
+      url: url,
+      type: "GET",
+      dataType: "json",
+    });
+
+  }
+</script>
+
+<body>
+  This is my HTML page1321. <br>
+  <button>
+    发送请求
+  </button>
+</body>
+
+</html>

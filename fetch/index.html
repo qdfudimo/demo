@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <button @click="cancelReq">取消请求</button>
+        <button @click="handel">请求1</button>
+        <button @click="handel2">请求2</button>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.24.0/axios.min.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000'
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    clist: [], // 页面展示数据
+                    abort: null
+                }
+            },
+            mounted() {},
+            methods: {
+                handel() {
+                    let {
+                        abort,
+                        ready
+                    } = this.request()
+                    this.abort()
+                    ready()
+                    this.abort = abort
+                },
+                cancelReq() {
+                    this.abort()
+                },
+                handel2() {
+                    let {
+                        abort,
+                        ready
+                    } = this.request()
+                    this.abort = abort
+                    ready()
+                },
+                request() {
+                    const controller = new AbortController();
+                    const signal = controller.signal;
+                    return {
+                        abort: () => controller.abort(),
+                        ready: () => this.abortableFetch({
+                            signal
+                        })
+                    }
+                },
+                abortableFetch(options) {
+                    axios({
+                        method: 'get',
+                        url: '/test',
+                        ...options
+                    }).then(res => {
+                        console.log(res);
+                    }).catch(error => {
+                        console.log(error, "error");
+                    })
+                },
+            },
+        })
+    </script>
+</body>
+
+</html>
