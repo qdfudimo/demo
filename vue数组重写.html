@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function def(obj, key, val, enumerable) {
+            Object.defineProperty(obj, key, {
+                value: val,
+                enumerable: !!enumerable,
+                writable: true,
+                configurable: true
+            })
+        }
+        const arrayProto = Array.prototype
+        const arrayMethods = Object.create(arrayProto)
+        const methodsToPatch = [
+            'push',
+            'pop',
+            'shift',
+            'unshift',
+            'splice',
+            'sort',
+            'reverse'
+        ]
+        methodsToPatch.forEach(function (method) {
+            const original = arrayProto[method]
+            def(arrayMethods, method, function mutator(...args) {
+                const result = original.apply(this, args)
+                let inserted
+                switch (method) {
+                    case 'push':
+                    case 'unshift':
+                        inserted = args
+                        break
+                    case 'splice':
+                        inserted = args.slice(2)
+                        break
+                }
+                console.log(111);
+                return result
+            })
+        })
+        let arr =[1,2]
+        arr.__proto__ = arrayMethods
+        arr.push(55)
+    </script>
+</body>
+
+</html>
