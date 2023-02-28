@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box-wrap {
+            position: relative;
+            width: 20%;
+            padding-top: 20%;
+        }
+
+        .box-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background: burlywood;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box-wrap">
+        <!-- 使用 百分比+padding，这里有一个很细的知识点；当padding、margin取值为百分比时，百分比的值是以父元素的width为参考。 -->
+        <div class="box-content">我是内容区域</div>
+    </div>
+
+</body>
+
+</html>
