@@ -63,6 +63,27 @@ addTask(3000, "3");
 addTask(4000, "4");
 // scheduler.taskStart();
 scheduler.limitRequest();
+
+async function test() {
+    const arr = [-11, 2, 3];
+    let data = await Promise.all(
+      arr.map(async (ele) => {
+        if (ele > 0) {
+          let result = await Promise.all(
+            [1, 2, 3].map((item) => Promise.resolve(item))
+          );
+          console.log(111111, result);
+          return result;
+        } else {
+          return ele;
+        }
+      })
+    );
+    console.log(22222, data);
+  }
+  
+  test();
+
 async function demo() {
     let pool = [] //并发池
     let max = 3 //最大并发量
