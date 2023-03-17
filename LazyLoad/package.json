@@ -1,0 +1,19 @@
+{
+  "name": "lazyload",
+  "version": "1.0.0",
+  "description": "webpack lazy load",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js --mode=development",
+    "clear": "rm -rf ./dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "anywhere": "^1.5.0",
+    "html-webpack-plugin": "^4.5.1",
+    "webpack": "^5.17.0",
+    "webpack-chain": "^6.5.1",
+    "webpack-cli": "^4.4.0"
+  }
+}
