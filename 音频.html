@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <audio controls :src="audioSrc" ref="audio" muted>
+            <!-- <a href="/media/cc0-audio/t-rex-roar.mp3">
+                Download audio
+            </a> -->
+        </audio>
+        <button @click="handel">播放</button>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.global.js"></script>
+    <script>
+        let {
+            createApp,
+            onMounted,
+            ref,
+            reactive
+        } = Vue
+        createApp({
+            setup() {
+                const audioSrc = ref("")
+                const audio = ref("")
+                const list = ref([])
+                onMounted(() => {
+                    setTimeout(() => {
+                        handel()
+                    }, 3000);
+                })
+                const handel = () => {
+                    console.log(111);
+                    audioSrc.value = "http://127.0.0.1:5500/audio5.mp3"
+                    console.log(audio.value);
+                    audio.value&&audio.value.play().catch(error=>{
+                        console.log(error);
+                    })
+                }
+                return {
+                    list,
+                    handel,
+                    audio,
+                    audioSrc
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+
+</html>
