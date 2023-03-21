@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .section {
+            display: flex;
+            width: 300px;
+            /* height: 100px; */
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            box-sizing: content-box;
+            scroll-snap-type: x mandatory;
+        }
+
+        .box {
+            height: 100px;
+            width: 160px;
+            margin: 0 10px;
+            flex :0 0 auto;
+            scroll-snap-align: start;
+        }
+
+        .bg-1 {
+            background-color: #f1c2c6;
+        }
+
+        .bg-2 {
+            background-color: #dac2f1;
+        }
+
+        .bg-3 {
+            background-color: #ccf1c2;
+        }
+
+        .bg-4 {
+            background-color: #c2e9f1;
+        }
+
+        .bg-5 {
+            background-color: #f1ebc2;
+        }
+        .section1 {
+            margin-top: 30px;
+            scroll-snap-type: x mandatory;
+        }
+        .ceshi {
+            height: 100px;
+            width: 160px;
+            margin: 0 10px;
+            flex :0 0 auto;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- scroll-snap-align start center end -->
+    <!-- scroll-snap-stop always 滑动太快不会错过每一项-->
+    <div class="section">
+        <div class="box bg-1"></div>
+        <div class="box bg-2"></div>
+        <div class="box bg-3"></div>
+        <div class="box bg-4"></div>
+        <div class="box bg-5"></div>
+    </div>
+    <div class="section section1">
+        <div class="bg-1 ceshi"></div>
+        <div class="bg-2 ceshi"></div>
+        <div class="bg-3 ceshi"></div>
+        <div class="bg-4 ceshi"></div>
+        <div class="bg-5 ceshi"></div>
+    </div>
+    <div class="section section1">
+        <div class="bg-1 ceshi"></div>
+        <div class="bg-2 ceshi"></div>
+        <div class="bg-3 ceshi"></div>
+        <div class="bg-4 ceshi"></div>
+        <div class="bg-5 ceshi"></div>
+    </div>
+</body>
+
+</html>
