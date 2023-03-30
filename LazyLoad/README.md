@@ -20,7 +20,7 @@ webpack 是一个现代 `JavaScript` 应用程序的静态模块打包器 `(modu
 
 ## 项目基础配置
 
-我们先搭建一个基础的 webpack 配置，让其支持懒加载配置，然后我们直接通过打包后的代码来看看懒加载实现的效果。我们需要有个基础目录配置，[项目 Demo](https://github.com/a1029563229/blogs/tree/master/Topic/Webpack/LazyLoad) 目录结构如下：
+我们先搭建一个基础的 webpack 配置，让其支持懒加载配置，然后我们直接通过打包后的代码来看看懒加载实现的效果。我们需要有个基础目录配置，[项目 Demo](https://github.com/qdfudimo/demo/tree/main/LazyLoad) 目录结构如下：
 
 ![image](http://shadows-mall.oss-cn-shenzhen.aliyuncs.com/images/assets/webpack/1.jpg)
 
@@ -283,4 +283,4 @@ npm i webpack webpack-cli webpack-chain html-webpack-plugin anywhere -D
 
 您的点赞是对作者的最大鼓励，也可以让更多人看到本篇文章！
 
-如果觉得本文对您有帮助，请帮忙在 [github](https://github.com/a1029563229/Blogs) 上点亮 `star` 鼓励一下吧！
+如果觉得本文对您有帮助，请帮忙在 [github](https://github.com/qdfudimo/demo/tree/main/LazyLoad) 上点亮 `star` 鼓励一下吧！
