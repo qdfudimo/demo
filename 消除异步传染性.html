@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // async function getUser() {
+        //     return await fetch('./data.json').then((res) => res.json());
+        // }
+        // async function m1() {
+        //     return await getUser();
+        // }
+        // async function m2() {
+        //     return await m1();
+        // }
+        // async function m3() {
+        //     return await m2();
+        // }
+        // async function main() {
+        //     const user = await m3()
+        //     console.log(user)
+        // }
+        // main()
+
+        // let promise1 = new Promise((resolve, reject) => {
+        //     setTimeout(() => {
+        //         resolve('收到数据并返回信息')
+        //     }, 6000)
+        // }).then(res => {
+        //     console.log(1111);
+        // })
+        // promise1.then(res=>{
+        //     console.log(2222);
+        // })
+        function main() {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve('收到数据并返回信息')
+                }, 3000)
+            })
+        }
+        function f1() {
+            return main()
+        }
+        function f2() {
+            let info = f1()
+            console.log(info);
+        }
+        // f2() // 过一秒后打印 ‘收到数据并返回信息’
+        function run(func) {
+            let i = 0;
+            let cache = [];
+            //缓存原始的数据
+            const original_fetch = main
+            window.main = (...args) => {
+                //判断cache 有没有缓存中的数据
+                if (cache[i]) {
+                    //进入这里是不会有pending状态的 因为是通过.then调用
+                    //状态只有成功和失败
+                    if (cache[i].status == "fulfilled") {
+                        return cache[i].data
+                    } else if (cache[i].status == "rejected") {
+                        throw cache[i].data
+                    }
+                }
+                let result = {
+                    status: "pending",
+                    data: null
+                }
+                cache[i++] = result
+                let prom = original_fetch(...args).then(res => {
+                    result.status = "fulfilled"
+                    result.data = res
+                }, error => {
+                    result.status = "rejected"
+                    result.data = error
+                })
+                //立刻抛出错误 在错误里判断
+                throw prom
+            }
+            try {
+                func()
+            } catch (error) {
+                //跑出的错误是Promise
+                if (error instanceof Promise) {
+                    let runFunc = () => {
+                        //把i重置为0 这样就可以获取到第一次的数据
+                        i = 0
+                        func()
+                    }
+                    error.then(runFunc, runFunc)
+                }
+            }
+        }
+        run(f2)
+    </script>
+</body>
+
+</html>
