@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=468643028cdf25f27f44a1fd28998f3b">
+    </script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        #app {
+            width: 7000px;
+            height: 4000px;
+            padding: 30px;
+            font-size: 100px;
+            background-color: skyblue;
+            margin: 0;
+            color: #fff;
+            border: 10px solid blue;
+        }
+        
+        .text {
+            color: #fff;
+            font-size: 200px;
+        }
+        
+        #map {
+            border: 1px solid red;
+            width: 3000px;
+            height: 3000px;
+            margin: 0 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="text">调整页面窗口大小，文字通过父级scale被自动缩放，地图自动调整宽高自适应</div>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        //获取地图宽度，根据scale计算地图当前实际应该显示的宽高像素值，直接修改地图的宽高属性。
+        //将地图容器按照全局的scale再还原回去，位置偏移问题解决，但是地图显示较大
+        //例如 页面初始地图大小为100 这次页面缩放了0.5 那么在0.5倍的情况下 地图大小为50 
+        //设置地图大小为50 页面又缩放了0.5 那么此时大小为25 要想地图此时大小再为50
+        //那么地图容器再按照全局的scale再还原回去 1/0.5 那么再把地图放大2倍  2*25 
+        //缩小几倍就放大几倍 1 / scale就是计算缩小了几倍
+        new AMap.Map('map');
+        const map = document.getElementById('map')
+        const app = document.getElementById('app')
+
+        app.style.transformOrigin = '0 0'
+        map.style.transformOrigin = '0 0'
+
+        let scale = 1
+        let preScale = 1 // 记录上次scale值，以便map做处理
+
+        const resize = () => {
+            const pageWidth = document.documentElement.clientWidth
+            const defaultWidth = 7000 // 设计宽度
+            preScale = scale
+            scale = pageWidth / 7000
+            app.style.transform = `scale(${scale})` // 使用scale对父级进行响应式
+            resizeMap()
+        }
+
+        function resizeMap() {
+            const {
+                offsetWidth,
+                offsetHeight
+            } = map
+
+            // 每次响应式，根据上次缩放比例计算是地图的设计宽高 offsetWidth / preScale
+            const newWidth = (offsetWidth / preScale) * scale;
+            const newHeight = (offsetHeight / preScale) * scale;
+
+            map.style.transform = `scale(${1 / scale})` // 抵消父级的scale，还原map容器
+                // 改变map容器真实宽高来适应屏幕变化
+            map.style.width = newWidth + "px"
+            map.style.height = newHeight + "px"
+        }
+
+        window.addEventListener('resize', resize)
+        resize()
+    </script>
+</body>
+
+</html>
