@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function sleep(duration) {
+            const time = new Date().getTime();
+            while (new Date().getTime() - time < duration) {}
+        }
+
+        const works = [
+            function() {
+                console.log("开始执行任务 1");
+                sleep(30);
+                console.log("已经完成任务 1");
+            },
+            function() {
+                console.log("开始执行任务 2");
+                sleep(30);
+                console.log("已经完成任务 2");
+            },
+            function() {
+                console.log("开始执行任务 3");
+                sleep(50);
+                console.log("已经完成任务 3");
+            },
+        ];
+
+        function workLoop(deadline) {
+            console.log("本帧还剩余：" + deadline.timeRemaining() + "ms");
+            while (deadline.timeRemaining() > 0 && works.length > 0) {
+                performUnitOfWork();
+            }
+            if (works.length > 0) {
+                console.log("本帧没有时间了，等浏览器空闲再继续执行任务");
+                requestIdleCallback(workLoop);
+            }
+        }
+
+        function performUnitOfWork() {
+            const work = works.shift();
+            work();
+        }
+        requestIdleCallback(workLoop);
+    </script>
+</body>
+
+</html>

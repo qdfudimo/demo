@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>requestIdleCallback</title>
+    <style>
+        .box {
+            width: 50px;
+            height: 50px;
+            background-color: skyblue;
+        }
+        
+        .result {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>requestIdleCallback</p>
+    <div>
+        <button class="normal-run">批量任务-常规模式</button>
+        <button class="rid-run">批量任务-rid模式</button>
+    </div>
+    <input type="text" />
+    <div class="box"></div>
+    <div class="result"></div>
+    <script>
+        function singleTask() {
+            const now = performance.now()
+                //只要没有小于0.001就会一直执行while循环
+            while (performance.now() - now < 0.001) {} // 模拟耗时操作
+        }
+        const data = new Array(20000).fill(1)
+
+        function normarlRun() {
+            for (let i = 0; i < data.length; i++) {
+                singleTask(data[i])
+            }
+            result('done')
+        }
+
+        function ridRun() {
+            let i = 0
+            let option = {
+                    timeout: 2000
+                } // 任务超时时间
+
+            function handler(idleDeadline) {
+                // timeRemaining() 返回当前帧还剩余的毫秒数。
+                // didTimeout 指定的时间是否过期。
+                while ((idleDeadline.timeRemaining() || idleDeadline.didTimeout) && i < data.length) {
+                    // 当前帧有剩余时间，或已任务已等待超时强制执行
+                    singleTask(data[i++])
+                }
+
+                if (i < data.length) {
+                    console.log(idleDeadline.timeRemaining(), idleDeadline.didTimeout, 2222);
+                    window.requestIdleCallback(handler, option)
+                } else {
+                    console.log(idleDeadline.timeRemaining(), idleDeadline.didTimeout);
+                    result('done')
+                }
+            }
+
+            window.requestIdleCallback(handler, option)
+        }
+
+        function result(text) {
+            const result = document.querySelector('.result')
+            result.innerHTML = text
+        }
+
+        const normalBtn = document.querySelector('.normal-run')
+        normalBtn.addEventListener('click', () => {
+            result('')
+            normarlRun()
+        });
+
+        const ridBtn = document.querySelector('.rid-run')
+        ridBtn.addEventListener('click', () => {
+            result('')
+            ridRun()
+        });
+        // 动画
+        (function() {
+            let left = 0
+            let direction = 1
+            const box = document.querySelector('.box')
+            setInterval(() => {
+                if (left >= 100 || left < 0) {
+                    direction *= -1
+                }
+                left += (direction)
+                box.style.transform = `translateX(${left}px)`
+            }, 16.7)
+        })()
+    </script>
+    <!-- <script>
+        window.onload = () => {
+            console.info('start')
+            setTimeout(() => {
+                console.info('timeout')
+            })
+            window.requestIdleCallback(() => {
+                console.info('requestIdleCallback')
+            })
+            window.requestAnimationFrame(() => {
+                console.info('requestAnimationFrame')
+            })
+            console.info('end')
+        }
+    </script> -->
+</body>
+
+</html>
