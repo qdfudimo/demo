@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var result = []
+        var a = 3
+        var total = 0
+
+        function foo(a) {
+            for (var i = 0; i < 3; i++) {
+                result[i] = function() {
+                    console.log(i);
+                    total += i * a
+                    console.log(total);
+                }
+            }
+        }
+        foo(1)
+        result[0]()
+        result[1]()
+        result[2]()
+    </script>
+</body>
+
+</html>
