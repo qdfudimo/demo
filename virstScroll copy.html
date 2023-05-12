@@ -13,7 +13,7 @@
             list-style: none;
             box-sizing: border-box;
         }
-
+        
         li {
             text-align: center;
             line-height: 60px;
@@ -25,8 +25,7 @@
 
 <body>
     <div id="app">
-        <div class="box" :style="`height:${viewH}px;overflow-y:scroll;`" @mousewheel="handleWheel"
-            @scroll="handleScroll">
+        <div class="box" :style="`height:${viewH}px;overflow-y:scroll;`" @mousewheel="handleWheel" @scroll="handleScroll">
             <ul :style="`height:${scrollH}px;`">
                 <li :style="`transform:translateY(${offsetY}px); height:${itemH}px;`" v-for='i in clist' :key="i">{{i}}
                 </li>
@@ -70,6 +69,12 @@
                         // 例如: 滚动的scrllTop = 1220  1220 % this.itemH = 20  offsetY = 1200
                         this.offsetY = scrollTop - (scrollTop % this.itemH);
                         //上面卷掉了多少，就要往下平移多少，不然showNum滚出可视区外了
+                        /**
+                         * 注：不能直接让偏移量 == scrollTop 否则会丢失滚动动画效果。举个例子比如列表项高度为100px，此时scrollTop为250px，那么第三个列表项一半在视口区
+                         * 域内部，一半在视口区域外部，那么在scrollTop未到达300px之前，startOffset一直为200px，于是滚动条会控制页面具体显示的内容，进而实现滚动效果，当
+                         * scrollTop到达300px时，startOffset也变为300，内容区域和视口区域的最上方再次重合，进而实现丝滑的滚动效果。所以滚动的过程中其实并不是一直在移动
+                         * 内容区域，而是当scrollTop为列表项高度的整数倍时，才移动内容区域。
+                         */
                         console.log(scrollTop, scrollTop % this.itemH);
                         this.clist = this.list.slice(
                             Math.floor(scrollTop / this.itemH), // 计算卷入了多少条
@@ -79,7 +84,7 @@
                     }
                 },
                 handleWheel(e) {
-                    console.log(e,e.wheelDelta, e.wheelDelta / 120, "wheelDelta");
+                    console.log(e, e.wheelDelta, e.wheelDelta / 120, "wheelDelta");
                 }
             },
         })
