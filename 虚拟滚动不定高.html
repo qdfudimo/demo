@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            box-sizing: border-box;
+        }
+        
+        #app {
+            margin: 60px;
+            height: 200px;
+            width: 100px;
+        }
+        
+        .list-container {
+            overflow: auto;
+            position: relative;
+        }
+        
+        .scroll-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            z-index: -1;
+        }
+        
+        .view-area {
+            left: 0;
+            right: 0;
+            top: 0;
+            position: absolute;
+        }
+        
+        .list-item {
+            padding: 5px;
+            color: #555;
+            box-sizing: border-box;
+            border-bottom: 1px solid #999;
+        }
+    </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div ref="list" :style="{height}" class="list-container" @scroll="scrollEvent($event)">
+            <div ref="scrollArea" class="scroll-area"></div>
+            <div ref="content" class="view-area">
+                <div class="list-item" ref="items" :id="item._index" :key="item._index" v-for="item in visibleData">
+                    <!-- <slot ref="slot" :item="item.item"></slot> -->
+                    {{item._index}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let list = []
+        for (let index = 0; index < 10000; index++) {
+            list.push(index)
+        }
+        new Vue({
+            el: '#app',
+            props: {
+                // 所有列表数据
+                listData: {
+                    type: Array,
+                    default: () => list,
+                },
+                // 预设高度
+                estimatedItemHeight: {
+                    type: Number,
+                    required: true,
+                    default: 30
+                },
+                // 容器高度
+                height: {
+                    type: String,
+                    default: '100%',
+                },
+            },
+            data() {
+                return {
+                    // 可视区域高度
+                    screenHeight: 0,
+                    // 初始索引
+                    start: 0,
+                    // 结束索引
+                    end: 0,
+                };
+            },
+            computed: {
+                // 所有列表数据 加了个索引
+                _listData() {
+                    return this.listData.map((item, index) => {
+                        return {
+                            _index: `_${index}`,
+                            item,
+                        };
+                    });
+                },
+                // 可视区域列表项数量
+                visibleCount() {
+                    return Math.ceil(this.screenHeight / this.estimatedItemHeight);
+                },
+                // 可视区域列表项数量
+                visibleData() {
+                    return this._listData.slice(this.start, this.end);
+                },
+            },
+            created() {
+                // 初始化位置信息
+                this.initPositions();
+            },
+            mounted() {
+                // 获取视口高度
+                this.screenHeight = this.$el.clientHeight;
+                // 初始化初始索引和结束索引
+                this.start = 0;
+                this.end = this.start + this.visibleCount - 1;
+            },
+            updated() {
+                this.$nextTick(function() {
+                    if (!this.$refs.items || !this.$refs.items.length) {
+                        return;
+                    }
+                    // 获取真实元素大小，修正列表项的位置信息
+                    this.updateItemsHeight();
+                    // 修正列表总高度
+                    let height = this.positions[this.positions.length - 1].bottom;
+                    this.$refs.scrollArea.style.height = height + 'px';
+                    // 重新获取偏移量
+                    this.setStartOffset();
+                });
+            },
+            methods: {
+                // 初始化位置信息
+                initPositions() {
+                    this.positions = this.listData.map((d, index) => ({
+                        index,
+                        height: this.estimatedItemHeight,
+                        top: index * this.estimatedItemHeight,
+                        bottom: (index + 1) * this.estimatedItemHeight,
+                    }));
+                },
+                // 获取列表起始索引
+                getStartIndex(scrollTop = 0) {
+                    return this.binarySearch(this.positions, scrollTop);
+                },
+                // 二分法查找
+                binarySearch(list, value) {
+                    let left = -1;
+                    let right = list.length;
+                    while (left + 1 !== right) {
+                        let mid = left + ((right - left) >>> 1);
+                        if (list[mid].bottom > value) {
+                            right = mid;
+                        } else {
+                            left = mid;
+                        }
+                    }
+                    return left == -1 ? 0 : right;
+                },
+                // 修正列表项的位置信息
+                updateItemsHeight() {
+                    let nodes = this.$refs.items;
+                    nodes.forEach((node, index) => {
+                        let rect = node.getBoundingClientRect();
+                        let height = rect.height;
+                        console.log(index);
+                        let oldHeight = this.positions[index].height;
+                        let dValue = oldHeight - height;
+                        if (dValue) {
+                            this.positions[index].bottom = this.positions[index].bottom - dValue;
+                            this.positions[index].height = height;
+
+                            for (let k = index + 1; k < this.positions.length; k++) {
+                                this.positions[k].top = this.positions[k - 1].bottom;
+                                this.positions[k].bottom = this.positions[k].bottom - dValue;
+                            }
+                        }
+                    });
+                },
+                // 设置偏移量
+                setStartOffset() {
+                    let startOffset =
+                        this.start == this.positions.length - 1 ?
+                        this.positions[this.start].bottom :
+                        this.positions[this.start].top;
+                    this.$refs.content.style.transform = `translate3d(0,${startOffset}px,0)`;
+                },
+                // 滚动事件对应回调
+                scrollEvent() {
+                    let scrollTop = this.$refs.list.scrollTop;
+                    this.start = this.getStartIndex(scrollTop);
+                    this.end = this.start + this.visibleCount - 1;
+                    this.setStartOffset();
+                },
+            },
+        })
+    </script>
+</body>
+
+</html>
