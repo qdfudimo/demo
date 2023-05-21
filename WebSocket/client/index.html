@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <input placeholder="请输入" v-model="inputVal" @input="handelInput" />
+            <button @click="handelConnect"> 开始连接 </button>
+            <button @click="handelClose"> 关闭连接 </button>
+            <div>{{textVal}}</div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.global.js"></script>
+    <script type="module">
+        import MyWebSocket from "./js/index.js";
+        import eventBus from "./js/eventBus.js";
+        let {
+            createApp,
+            onMounted,
+            ref,
+            reactive
+        } = Vue
+        createApp({
+            setup() {
+                const name = "test"; //连接用户名
+                const wsUrl = "ws://127.0.0.1:1024/ws/?name=" + name;
+                const inputVal = ref("")
+                const textVal = ref("")
+                let MyWS;
+                onMounted(() => { })
+                eventBus.onEvent("onMsg",(data)=>{
+                   textVal.value = data
+                })
+                eventBus.onEvent("reconnect",()=>{
+                    handelConnect()
+                })
+                const handelInput = () => {
+                    if(MyWS && MyWS.webSocketState) {
+                        MyWS.sendMsg({
+                            ModeCode:"message",
+                            msg:inputVal.value
+                        })
+                    }
+                }
+                const handelConnect = () => {
+                    MyWS= null
+                    MyWS = new MyWebSocket(wsUrl);
+                    MyWS.init(
+                      {
+                        //time：心跳时间间隔 timeout：心跳超时间隔 reconnect：断线重连时
+                        time: 10 * 1000,
+                        timeout: 3 * 1000,
+                        reconnect: 5 * 1000,
+                      },
+                      true
+                    );
+                }
+                const handelClose = () => {
+                    MyWS.close()
+                    MyWS = null
+                }
+                return {
+                    inputVal,
+                    handelConnect,
+                    handelClose,
+                    handelInput,
+                    textVal
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+
+</html>
