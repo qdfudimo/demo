@@ -18,6 +18,26 @@ class WebRTCAction {
         }).catch((err) => {
             console.error(err);
         })
+        //使用摄像头
+        // navigator.mediaDevices.getUserMedia({
+        //         video: true,
+        //         audio: false
+        //     })
+        // .then(stream => {
+        //     let video = document.querySelector('#player');
+        //     if ('srcObject' in video) { // 判断是否支持 srcObject 属性
+        //         video.srcObject = stream;
+        //     } else {
+        //         video.src = window.URL.createObjectURL(stream);
+        //     }
+        //     video.onloadedmetadata = function(e) {
+        //         video.play();
+        //     };
+        // })
+        // .catch((err) => { // 捕获错误
+        //     console.error(err.name + ': ' + err.message);
+        // });
+
     }
     record() {
         const options = {
