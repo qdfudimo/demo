@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="render">直接渲染</button> <button id="timeRender">setTimeoOt渲染</button>
+    <button id="resRender">requestAnimationFrame渲染</button>
+    <ul id="wrap"></ul>
+
+    <script>
+        render.onclick = () => {
+            let total = 100000;
+            let time = new Date();
+            for (let i = 0; i < total; i++) {
+                let li = document.createElement('li');
+                li.innerHTML = i;
+                document.getElementById('wrap').appendChild(li);
+            }
+            console.log('js执行时间', new Date() - time); //js执行时间 710
+            setTimeout(function () {
+                console.log('页面渲染时间', new Date() - time); //页面渲染时间 4771
+            })
+        }
+        let totalList = 100000;
+        let id = 0
+        const loadList = (count) => {
+            if (count > totalList) return
+            setTimeout(() => {
+                for (let i = 0; i < 100; i++) {
+                    let li = document.createElement('li');
+                    li.innerHTML = id++;
+                    document.getElementById('wrap').appendChild(li);
+                }
+                loadList(count + 100)
+            }, 0);
+        }
+        timeRender.onclick = () => {
+            let time = new Date();
+            loadList(100)
+        }
+        resRender.onclick = () => {
+            const loadLists = (count) => {
+                if (count > totalList) return
+                let start = new Date();
+                requestAnimationFrame((now) => {
+                    let docuFragment = document.createDocumentFragment()
+                    for (let i = 0; i < 100; i++) {
+                        let li = document.createElement('li');
+                        li.innerHTML = id++;
+                        document.getElementById('wrap').appendChild(li);
+                    }
+                    console.log('now', now)
+                    console.log('gap', Date.now() - start)
+                    loadLists(count + 100)
+                })
+            }
+            loadLists(100)
+        }
+    </script>
+</body>
+
+</html>
