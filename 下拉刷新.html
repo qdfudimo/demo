@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <style type="text/css">
+            body {
+                font-size: 12px;
+                -webkit-user-select: none;
+                -webkit-text-size-adjust: none;
+                font-family: helvetica;
+            }
+            
+            #slideDown {
+                margin-top: 0;
+                width: 100%;
+            }
+            
+            #slideDown1,
+            #slideDown2 {
+                width: 100%;
+                background: #e9f4f7;
+                display: none;
+            }
+            
+            #slideDown1 {
+                height: 20px;
+            }
+            
+            #slideDown1>p,
+            #slideDown2>p {
+                margin: 20px auto;
+                text-align: center;
+                font-size: 14px;
+                color: #37bbf5;
+            }
+            
+            #content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 1;
+                /*    -webkit-touch-callout:none;*/
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                width: 100%;
+                padding: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="content">
+            <div id="slideDown">
+                <div id="slideDown1">
+                    <p>松开刷新</p>
+                </div>
+                <div id="slideDown2">
+                    <p>正在刷新 ...</p>
+                </div>
+            </div>
+            <div class="myContent">
+                <ul>
+                    <li>item1 -- item1 -- item1</li>
+                    <li>item2 -- item2 -- item2</li>
+                    <li>item3 -- item3 -- item3</li>
+                    <li>item4 -- item4 -- item4</li>
+                    <li>item5 -- item5 -- item5</li>
+                    <li>item6 -- item6 -- item6</li>
+                    <li>item7 -- item7 -- item7</li>
+                </ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, false);
+            var flag = true;
+            //第一步：下拉过程
+            function slideDownStep1(dist) { // dist 下滑的距离，用以拉长背景模拟拉伸效果
+                var slideDown1 = document.getElementById("slideDown1"),
+                    slideDown2 = document.getElementById("slideDown2");
+                slideDown2.style.display = "none";
+                slideDown1.style.display = "block";
+                slideDown1.style.height = (parseInt("20px") - dist) + "px";
+            }
+            //第二步：下拉，然后松开，
+            function slideDownStep2() {
+                var slideDown1 = document.getElementById("slideDown1"),
+                    slideDown2 = document.getElementById("slideDown2");
+                slideDown1.style.display = "none";
+                slideDown1.style.height = "20px";
+                slideDown2.style.display = "block";
+                //刷新数据
+                //location.reload();
+            }
+            //第三步：刷新完成，回归之前状态
+            function slideDownStep3() {
+                var slideDown1 = document.getElementById("slideDown1"),
+                    slideDown2 = document.getElementById("slideDown2");
+                slideDown1.style.display = "none";
+                slideDown2.style.display = "none";
+                flag = true;
+            }
+
+            //下滑刷新调用
+            k_touch("content", "y");
+            //contentId表示对其进行事件绑定，way==>x表示水平方向的操作，y表示竖直方向的操作
+            function k_touch(contentId, way) {
+                var _start = 0,
+                    _end = 0,
+                    _content = document.getElementById(contentId);
+                _content.addEventListener("touchstart", touchStart, false);
+                _content.addEventListener("touchmove", touchMove, false);
+                _content.addEventListener("touchend", touchEnd, false);
+
+                function touchStart(event) {
+                    //var touch = event.touches[0]; //这种获取也可以，但已不推荐使用
+                    if(!flag) {
+                        return false;
+                    }
+                    var touch = event.targetTouches[0];
+                    if(way == "x") {
+                        _start = touch.pageX;
+                    } else {
+                        _start = touch.pageY;
+                    }
+                }
+
+                function touchMove(event) {
+                    if(!flag) {
+                        return false;
+                    }
+                    var touch = event.targetTouches[0];
+                    if(way == "x") {
+                        _end = (_start - touch.pageX);
+                    } else {
+                        _end = (_start - touch.pageY);
+                        //下滑才执行操作
+                        if(_end < 0) {
+                            slideDownStep1(_end);
+                        }
+                    }
+
+                }
+
+                function touchEnd(event) {
+                    if(flag) {
+                        flag = false;
+                    } else {
+                        return false;
+                    }
+                    if(_end > 0) {
+                        console.log("左滑或上滑  " + _end);
+                    } else {
+                        console.log("右滑或下滑" + _end);
+                        slideDownStep2();
+                        //刷新成功则
+                        //模拟刷新成功进入第三步
+                        setTimeout(function() {
+                            slideDownStep3();
+                        }, 2500);
+                    }
+                }
+            }
+        </script>
+    </body>
+
+</html>
