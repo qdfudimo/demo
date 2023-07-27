@@ -15,6 +15,7 @@ const defineStore = (name, {
         store.$state = reactive(_state)
         for (const key in _state) {
             store[key] = toRef(store.$state, key)
+            console.log(store[key]);
         }
     }
     if (getters && Object.keys(getters).length) {

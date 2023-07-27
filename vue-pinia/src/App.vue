@@ -1,8 +1,15 @@
 <script setup>
-import { reactive, ref, watchEffect, h } from "vue";
+import { reactive, ref, watchEffect, h,createVNode, getCurrentInstance, render } from "vue";
 import HelloWorld from './components/HelloWorld.vue';
 import testPage from "./components/test-page.vue";
-import vAuth from "./directive/permission"
+import testCom from "./components/testCom.vue";
+import vAuth from "./directive/permission";
+const vNode = createVNode(testCom,{num:1});
+// console.log(getCurrentInstance());
+console.log(vNode);
+const container = document.createElement('div');
+render(vNode, container);
+console.log(container);
 const handelClick = (flag) => {
   // codeList.push(4)
   if (flag) {
@@ -21,6 +28,7 @@ const headerRender = ({ column }) => h("div", null, `${column.label}(渲染函�
     <div>2222</div>
     <div>22200000</div>
   </test-page>
+  <!-- <testCom /> -->
   <div>
     <button hover-class="button-hover" v-auth="curCode">
       增加数据权限测试

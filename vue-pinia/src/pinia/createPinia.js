@@ -9,6 +9,7 @@ export default function createPinia() {
     const createStore = (name, store) => {
         if (!setupStore[name]) {
             setupStore[name] = reactive(store)
+            console.log(setupStore[name].todos);
             setupStore[name].$patch = patch
         }
         return setupStore[name]
