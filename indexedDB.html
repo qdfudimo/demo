@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="addBtn" style="margin-right: 16px;">新增</button>
+    <button id="readBtn" style="margin-right: 16px;">读取</button>
+    <button id="readForBtn" style="margin-right: 16px;">遍历</button>
+    <button id="updateBtn" style="margin-right: 16px;">更新</button>
+    <button id="deleteBtn" style="margin-right: 16px;">删除</button>
+    <button id="indexBtn" style="margin-right: 16px;">索引</button>
+    <script>
+        //https://www.ruanyifeng.com/blog/2018/07/indexeddb.html
+        var request = window.indexedDB.open("TSET_DB", 2);
+        //这个方法接受两个参数，第一个参数是字符串，表示数据库的名字。如果指定的数据库不存在，就会新建数据库。
+        //第二个参数是整数，表示数据库的版本。如果省略，打开已有数据库时，默认为当前版本；新建数据库时，默认为1。
+        // indexedDB.open()方法返回一个 IDBRequest 对象。这个对象通过三种事件error、success、upgradeneeded，处理打开数据库的操作结果。
+        request.onerror = function (event) {
+            console.log('数据库打开报错');
+        };
+        var db;
+        request.onsuccess = function (event) {
+            db = db || request.result;
+            console.log('数据库打开成功',request);
+        };
+        request.blocked = function (event) {
+            console.log("数据还未关闭",event);
+        };
+        // var db;
+        //如果指定的版本号，大于数据库的实际版本号，就会发生数据库升级事件upgradeneeded。
+        request.onupgradeneeded = function (event) {
+            console.log(event);
+            db = event.target.result;
+            //数据库新建成功以后，新增一张叫做person的表格，主键是id。
+            var objectStore
+            if (!db.objectStoreNames.contains('person')) {
+                objectStore = db.createObjectStore('person', {
+                    keyPath: 'id'
+                });
+            }
+            //IDBObject.createIndex()的三个参数分别为索引名称、索引所在的属性、配置对象（说明该属性是否包含重复的值）。
+            objectStore.createIndex('name', 'name', {
+                unique: false
+            });
+            objectStore.createIndex('email', 'email', {
+                unique: true
+            });
+        }
+        // 写入数据需要新建一个事务。新建时必须指定表格名称和操作模式（“ 只读” 或“ 读写”）。
+        // 新建事务以后，通过IDBTransaction.objectStore(name) 方法， 拿到 IDBObjectStore 对象， 再通过表格对象的add() 方法， 向表格写入一条记录。
+        // 写入操作是一个异步操作， 通过监听连接对象的success事件和error事件， 了解是否写入成功。
+        function add() {
+            var request = db.transaction(['person'], 'readwrite')
+                .objectStore('person')
+                .add({
+                    id: 2,
+                    name: '李四',
+                    age: 24,
+                    email: 'lisi@example.com'
+                });
+
+            request.onsuccess = function (event) {
+                console.log('数据写入成功');
+            };
+
+            request.onerror = function (event) {
+                console.log('数据写入失败', event);
+            }
+        }
+        addBtn.addEventListener("click", () => {
+            add();
+        })
+
+        function read() {
+            var transaction = db.transaction(['person']);
+            var objectStore = transaction.objectStore('person');
+            var request = objectStore.get(1); // 用于读取数据，参数是主键的值
+
+            request.onerror = function (event) {
+                console.log('事务失败', event);
+            };
+
+            request.onsuccess = function (event) {
+                if (request.result) {
+                    console.log('Name: ' + request.result.name);
+                    console.log('Age: ' + request.result.age);
+                    console.log('Email: ' + request.result.email);
+                } else {
+                    console.log('未获得数据记录', event);
+                }
+            };
+        }
+        readBtn.addEventListener("click", () => {
+            read();
+        })
+        //遍历数据表格的所有记录，要使用指针对象 IDBCursor。
+        function readAll() {
+            var objectStore = db.transaction('person').objectStore('person');
+            objectStore.openCursor().onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    console.log('Id: ' + cursor.key);
+                    console.log('Name: ' + cursor.value.name);
+                    console.log('Age: ' + cursor.value.age);
+                    console.log('Email: ' + cursor.value.email);
+                    cursor.continue();
+                } else {
+                    console.log('没有更多数据了！');
+                }
+            };
+        }
+        readForBtn.addEventListener("click", () => {
+            readAll();
+        })
+        // 更新数据要使用IDBObject.put()方法。
+        function update() {
+            var request = db.transaction(['person'], 'readwrite')
+                .objectStore('person')
+                .put({
+                    id: 1,
+                    name: '王五',
+                    age: 35,
+                    email: 'wangwu@example.com'
+                });
+
+            request.onsuccess = function (event) {
+                console.log('数据更新成功');
+            };
+
+            request.onerror = function (event) {
+                console.log('数据更新失败');
+            }
+        }
+        updateBtn.addEventListener("click", () => {
+            update();
+        })
+        //IDBObjectStore.delete()方法用于删除记录。
+        function remove() {
+            var request = db.transaction(['person'], 'readwrite')
+                .objectStore('person')
+                .delete(1);
+
+            request.onsuccess = function (event) {
+                console.log('数据删除成功');
+            };
+        }
+        deleteBtn.addEventListener("click", () => {
+            remove();
+        })
+        //使用索引
+        //索引的意义在于，可以让你搜索任意字段，也就是说从任意字段拿到数据记录。
+        //如果不建立索引，默认只能搜索主键（即从主键取值）。
+        //假定新建表格的时候，对name字段建立了索引。
+        //IDBObjectStore.index()方法可以获取 IDBIndex 对象。
+        function useIndex(params) {
+            var transaction = db.transaction(['person'], 'readonly');
+            var store = transaction.objectStore('person');
+            var index = store.index('name');
+            var request = index.get('李四1');
+            request.onsuccess = function (e) {
+                var result = e.target.result;
+                if (result) {
+                    console.log(result);
+                } else {
+                    console.log("不存在",e,request);
+                }
+            }
+        }
+        indexBtn.addEventListener("click", () => {
+            useIndex();
+        })
+    </script>
+</body>
+
+</html>
