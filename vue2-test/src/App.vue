@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <component :is="remote" v-if="remote" v-bind="$attrs" v-on="$listeners" />
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -11,9 +12,12 @@
 </template>
 
 <script>
+import Vue from 'vue/dist/vue.common.js'
+import { loadModule } from 'vue3-sfc-loader/dist/vue2-sfc-loader.js'
 export default {
   data() {
     return {
+      remote: null
     }
   },
   mounted() {
@@ -25,8 +29,34 @@ export default {
       current,
     )
     console.log(currentRoute);
+    this.load("/helloWorld.vue")
   },
   methods: {
+    // 加载
+    async load(url) {
+      const com = await loadModule(url, {
+        moduleCache: {
+          vue: Vue,
+        },
+        // 获取文件
+        async getFile(url) {
+          const res = await fetch(url)
+          if (!res.ok) {
+            throw Object.assign(new Error(`${res.statusText}  ${url}`), { res })
+          }
+          return {
+            getContentData: asBinary => (asBinary ? res.arrayBuffer() : res.text()),
+          }
+        },
+        // 添加样式
+        addStyle(textContent) {
+          const style = Object.assign(document.createElement('style'), { textContent })
+          const ref = document.head.getElementsByTagName('style')[0] || null
+          document.head.insertBefore(style, ref)
+        },
+      })
+      this.remote = com
+    },
     goToPage(path) {
     }
   },
