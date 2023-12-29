@@ -14,6 +14,7 @@
 <script>
 import Vue from 'vue/dist/vue.common.js'
 import { loadModule } from 'vue3-sfc-loader/dist/vue2-sfc-loader.js'
+// import { scan } from 'qr-scanner-wechat';
 export default {
   data() {
     return {
@@ -21,39 +22,78 @@ export default {
     }
   },
   mounted() {
+    // console.log(scan);
     const router = this.$router
     const current = this.$route
-    console.log(current);
+    // console.log(current);
     const currentRoute = router.resolve(
       "/about",
       current,
     )
-    console.log(currentRoute);
+    // console.log(currentRoute);
     this.load("/helloWorld.vue")
   },
   methods: {
     // 加载
     async load(url) {
       const com = await loadModule(url, {
-        moduleCache: {
-          vue: Vue,
-        },
-        // 获取文件
+        moduleCache: { vue: Vue },
         async getFile(url) {
-          const res = await fetch(url)
-          if (!res.ok) {
-            throw Object.assign(new Error(`${res.statusText}  ${url}`), { res })
+          //console.log("getFile", url)
+
+          url = /\.(js|mjs|css|less|vue)$/.test(url) ? url : `${url}.${url.startsWith(window.location.origin) ? "vue" : "js"}`
+          const type = /.*?\.js|.mjs$/.test(url) ? ".mjs" : /.*?\.vue$/.test(url) ? '.vue' : /.*?\.css$/.test(url) ? '.css' : '.vue';
+
+          const fetched = await fetch(url);
+          if (!fetched.ok)
+            throw Object.assign(new Error(`${fetched.statusText} ${url}`), { fetched });
+
+          const getContentData = async asBinary => {
+            let content = await (asBinary ? fetched.arrayBuffer() : fetched.text());
+
+            // vue3-sfc-loader fails to import before attempting an [export * from "./path"] with ""
+            // prefixing any with an import statement to populate the moduleCache
+            if (!asBinary && content.includes("export * from")) {
+              const matches = content.matchAll(/export \* from (['"])([^'"]+)['"];?/g)
+              for (const match of matches) {
+                var module = options.pathResolve({ refPath: url, relPath: match[2] })
+                if (!options.moduleCache[module]) {
+                  content = content.replace(match[0], `import * as vueLoaderExportSupport${match.index} from ${match[1]}${match[2]}${match[1]}\n${match[0]}\n`)
+                }
+              }
+            }
+
+            return content;
           }
-          return {
-            getContentData: asBinary => (asBinary ? res.arrayBuffer() : res.text()),
+
+          return { getContentData, type }
+        },
+        addStyle(textContent, url) {
+          if (url) {
+            let linkElement = document.createElement('link');
+            linkElement.setAttribute('rel', 'stylesheet')
+            linkElement.setAttribute('type', 'text/css')
+            linkElement.setAttribute('href', url)
+            document.head.insertBefore(linkElement,
+              document.head.getElementsByTagName('style')[0] || null)
+          } else if (textContent) {
+            let styleElement = document.createElement('style');
+            document.head.insertBefore(Object.assign(styleElement, { textContent }),
+              document.head.getElementsByTagName('style')[0] || null);
+          }
+          return null;
+        },
+        handleModule(type, getContentData, path, options) {
+          switch (type) {
+            case '.css':
+              return options.addStyle(getContentData(false), path);
+            case '.less':
+              console.error('.......')
           }
         },
-        // 添加样式
-        addStyle(textContent) {
-          const style = Object.assign(document.createElement('style'), { textContent })
-          const ref = document.head.getElementsByTagName('style')[0] || null
-          document.head.insertBefore(style, ref)
-        },
+        log(type, ...args) {
+          console.log(type, ...args);
+        }
       })
       this.remote = com
     },
