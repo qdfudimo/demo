@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="app"></div>
+  <!--引入 element-ui 的样式，-->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="./vue/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue2-sfc-loader.js"></script>
+  <!-- 引入element 的组件库-->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- <link rel="stylesheet" href="./css/index.css"> -->
+  <script type="module">
+    const { loadModule } = window['vue2-sfc-loader'];
+
+    const options = {
+      moduleCache: {
+        vue: Vue
+      },
+      async getFile(url) {
+        
+        const res = await fetch(url);
+        if ( !res.ok )
+          throw Object.assign(new Error(res.statusText + ' ' + url), { res });
+        return {
+          getContentData: asBinary => asBinary ? res.arrayBuffer() : res.text(),
+        }
+      },
+      addStyle(textContent) {
+
+        const style = Object.assign(document.createElement('style'), { textContent });
+        const ref = document.head.getElementsByTagName('style')[0] || null;
+        document.head.insertBefore(style, ref);
+      },
+    }
+
+    loadModule('./components/unit03.vue', options)
+    .then(component => new Vue(component).$mount('#app'));
+  </script>
+</body>
+</html>
