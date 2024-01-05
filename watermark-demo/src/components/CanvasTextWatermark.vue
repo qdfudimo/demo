@@ -52,6 +52,12 @@ const setWaterMark = (Image, el) => {
   waterMark.className = `water-mark`; // 方便自定义展示结果
   style = `${style}background-image: url(${Image});`;
   waterMark.setAttribute("style", style);
+  waterMark.classList.add('class-name');
+  const defaultStyle = document.createElement('style');
+  defaultStyle.innerHTML = `.class-name {
+    color:red;
+  }`;
+  document.head.appendChild(defaultStyle);
   el.appendChild(waterMark)
 }
 // 监听 DOM 变化
@@ -71,6 +77,7 @@ const createObserver = (el) => {
         target === waterMarkEl &&
         currStyle !== style
       ) {
+        console.log(mutationsList[0]);
         waterMarkEl.setAttribute("style", style);
       }
     }
@@ -79,6 +86,7 @@ const createObserver = (el) => {
   observer.observe(el.parentElement, {
     childList: true,
     attributes: true,
+    attributeOldValue: true,
     subtree: true,
   });
 };
