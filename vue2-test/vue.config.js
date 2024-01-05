@@ -1,5 +1,7 @@
 
 const { name } = require('./package');
+const BuildVersionPlugin = require("./plugin/build-version-plugin.js")
+const pkg = require('./package.json')
 module.exports = {
   devServer: {
     port: 1111,
@@ -21,6 +23,9 @@ module.exports = {
   },
   // 自定义webpack配置
   configureWebpack: {
+    plugins: [
+      new BuildVersionPlugin(pkg)
+    ],
     output: {
       library: `${name}`,
       libraryTarget: 'umd',// 把子应用打包成 umd 库格式
