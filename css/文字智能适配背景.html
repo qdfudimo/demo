@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .banner {
+            height: 300px;
+            width: 100vw;
+            background: linear-gradient(45deg, #fff 50%,#000 50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .title {
+            color: #fff;
+            font-size: 3em;
+            transition:  0.5s;
+            mix-blend-mode: difference;
+        }
+        .banner:hover .title {
+            transform: translateX(-110px);
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <h1 class="title">你在哪里啊 我在这里啊</h1>
+    </div>
+</body>
+</html>
