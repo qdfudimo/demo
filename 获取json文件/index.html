@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <script type="text/javascript" src="./data.json"></script>
     <script type="module">
         // import data from"./data.json"
-        // fetch("./data.json",{
-        //     contentType:"application/json"
-        // }).then(response=>{
-        //     return response.json()
-        // }).then(res=>{
+        fetch("./data.json",{
+            contentType:"application/json"
+        }).then(response=>{
+            // return response.json()
+            const readableStream = response.body
+            const reader = readableStream.getReader()
+            console.log(reader);
+        })
+        // .then(res=>{
         //     console.log(res);
         // })
     </script>
 </body>
+
 </html>
