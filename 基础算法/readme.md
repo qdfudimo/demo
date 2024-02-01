@@ -164,3 +164,6 @@ const valdate = data => {
 }
 console.log(valdate(s)) // true
 ```
+#### JSON.stringify() 7 个鲜为人知的坑
+
+ https://juejin.cn/post/7330289404731047936
