@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        svg:hover #line {
+            stroke-dashoffset: 0;
+        }
+
+        #line {
+            transition: all 2s;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- https://www.cnblogs.com/daisygogogo/p/11044353.html -->
+    <svg width="500" height="120">
+        <defs>
+            <mask id="mask3" x="0" y="0" width="100" height="100">
+                <rect x="0" y="0" width="100" height="50" style="stroke:none; fill: #ffffff" />
+                <rect x="0" y="50" width="100" height="50" style="stroke:none; fill: #000000" />
+            </mask>
+        </defs>
+        <text x="10" y="55" style="stroke: none; fill: #000000;">
+            此文本在矩形下方
+        </text>
+        <rect x="1" y="1" width="100" height="100" style="stroke: none; fill: #0000ff; mask: url(#mask3)" />
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" height="100" width="100" style='border:1px solid #000'>
+        <defs>
+            <!-- mask 如果是黑色表示不透明
+        white 表示是完全透明
+        蒙版的左上角和使用蒙版的左上角重合，白色就是显示不分，黑色就是隐藏部分 -->
+            <mask id="moon">
+                <circle cx='40' cy="40" r="20" fill="white" />
+                <circle cx='40' cy="40" r="20" fill="black" style="transform:translate(20px, 10px)" />
+            </mask>
+        </defs>
+        <!-- 实际需要显示的内容，使用了mask id为moon-->
+        <circle cx='40' cy="40" r="20" fill="green" mask="url(#moon)" />
+        <!-- 模拟 mask 显示的效果，白色就是会显示的内容，黑色就是看不见的内容 -->
+        <!-- <circle cx='100' cy="100" r="20" fill="white"  />        
+        <circle cx='100' cy="100" r="20" fill="black" style="transform:translate(10px, 10px)" /> -->
+    </svg>
+    <svg style='border:1px solid #000' height="100" width="300">
+        <line id="line" x1="0" y1="30" x2="300" y2="30" stroke-dashoffset="300" stroke-width="20" stroke="red" stroke-dasharray="300,320" />
+    </svg>
+    <svg style='border:1px solid #000' height="100" width="200">
+        <defs>
+            <polyline id="path2024" points="6, 6 194, 6  194, 94 6, 94 6, 6 " fill="transparent" />
+            <radialGradient id="gradient2024" ></radialGradient>
+            <mask id="mask2024">
+                <circle cx='0' cy="0" r="60" fill="white" />
+            </mask>
+        </defs>
+        <use stroke="#235fa7" stroke-width="2"  xlink:href="#path2024"></use>
+        <use stroke="#4fd2dd" stroke-width="6" mask="url(#mask2024)"  xlink:href="#path2024"></use>
+    </svg>
+</body>
+
+</html>
