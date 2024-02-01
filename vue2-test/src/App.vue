@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <component :is="remote" v-if="remote" v-bind="$attrs" v-on="$listeners" />
+    <custom-area></custom-area>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -14,8 +15,13 @@
 <script>
 import Vue from 'vue/dist/vue.common.js'
 import { loadModule } from 'vue3-sfc-loader/dist/vue2-sfc-loader.js'
+import customArea from './views/custom-area.vue';
 // import { scan } from 'qr-scanner-wechat';
 export default {
+  components: { customArea },
+  comments:{
+    customArea
+  },
   data() {
     return {
       remote: null

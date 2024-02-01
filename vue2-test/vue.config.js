@@ -9,6 +9,7 @@ module.exports = {
       'Access-Control-Allow-Origin': '*',
     },
   },
+  runtimeCompiler:true,
   // publicPath:"/vue-hash/",
   // outputDir:"production",
   // assetsDir:"production-sub-path",
