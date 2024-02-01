@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #cell,
+        #cell1 {
+            border: 1px solid #000;
+            width: 100px;
+            height: 32px;
+            line-height: 32px;
+            padding: 0 20px;
+        }
+
+        .child,
+        .child1 {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cell"><div class="child">你在哪里啊我在这里你呢</div><span>张分发你放哪方法呢</span></div>
+    <div id="cell1">
+        <span class="child1">你在哪里啊我在这里你呢<span>张</span></span>
+    </div>
+    <script>
+        const cell = document.querySelector("#cell")
+        const range = document.createRange()
+        console.log(cell.childNodes);
+        //如果第一个参数是元素节点（节点子元素也是节点不是文本节点）
+        // 那么第二个参数就是要截取的节点子元素的第几个
+        //如果截取的是文本节点 那么第二个参数就是要截取的文本节点的位置
+        // <span class="child1">你在哪里啊我在这里你呢<span>
+        //range.setStart(cell, 0)
+        //range.setEnd(cell, 2) 输出 你在
+        range.setStart(cell, 0)
+        range.setEnd(cell, cell.childNodes.length)
+        console.log(range.toString());
+        const rectWidth = range.getBoundingClientRect()
+        console.log(rectWidth);
+        // if (rectWidth > cell.offsetWidth) {
+
+        // }
+        // const cell1 = document.querySelector("#cell1")
+        // const cell1Child = document.querySelector(".child1")
+        // console.log(cell1Child.childNodes);
+        // const range1 = document.createRange()
+        // range1.setStart(cell1Child.childNodes[1], 0)
+        // range1.setEnd(cell1Child.childNodes[1], cell1Child.childNodes[1].childNodes.length)
+        // //range内容
+        // console.log(range1.toString());
+        // const rectWidth1 = range1.getBoundingClientRect()
+        // console.log(rectWidth1);
+    </script>
+</body>
+
+</html>
