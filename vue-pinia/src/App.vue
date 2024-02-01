@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watchEffect, h,createVNode, getCurrentInstance, render } from "vue";
+import { reactive, ref, watchEffect, h,createVNode, getCurrentInstance, render, watch } from "vue";
 import HelloWorld from './components/HelloWorld.vue';
 import testPage from "./components/test-page.vue";
 import testCom from "./components/testCom.vue";
@@ -19,6 +19,10 @@ const handelClick = (flag) => {
   curCode.value = 4
 }
 const curCode = ref(3)
+const divE = ref(null)
+watch(divE,(o,n)=>{
+  console.log(o,n);
+})
 const headerRender = ({ column }) => h("div", null, `${column.label}(渲染函数自定义表头)`)
 </script>
 
@@ -29,7 +33,7 @@ const headerRender = ({ column }) => h("div", null, `${column.label}(渲染函�
     <div>22200000</div>
   </test-page>
   <!-- <testCom /> -->
-  <div>
+  <div ref="divE">
     <button hover-class="button-hover" v-auth="curCode">
       增加数据权限测试
     </button>

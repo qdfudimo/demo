@@ -10,6 +10,7 @@ export default defineConfig({
   //   copyPublicDir: false
   // },
   plugins: [vue(),
+    // VitePluginStyleInject()
     copy({
       targets: [{
         src: 'public/demo/demo.js',

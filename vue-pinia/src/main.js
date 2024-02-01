@@ -8,4 +8,4 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.use(createPinia())
 const el =app.mount('#app')
-console.log(el);
+// console.log(el);
