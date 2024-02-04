@@ -9,6 +9,23 @@ var data = [
     { id: 6, pid: 13, name: '卫生纸' },
     { id: 7, pid: 3, name: '薯片' },
 ];
+/**
+ * 递归扁平数组转树形
+ * @param {*} arr 
+ * @param {*} pid 
+ * @returns 
+ */
+function arrayToTreeDi(arr,pid=0) {
+  let result = []
+  for (let i = 0; i < arr.length; i++) {
+    if(arr[i].pid === pid) {
+      result.push(arr[i])
+      let children =arrayToTreeDi(arr,arr[i].id)
+      children.length&&(arr[i].children = children)
+    }
+  }
+  return result
+}
 //时间复杂度：O(n^2)，其中 n 是节点的数量。 空间复杂度：O(n^2)。 优缺点：不适合大规模数据。
 function arrayToTreeRec(nodes, pid = null) {
     return nodes
