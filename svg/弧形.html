@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- A命令用于画弧形。
+    A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+    a rx ry x-axis-rotation large-arc-flag sweep-flag dx dy
+    参数说明
+    弧形命令A前两个参数rx和ry分别是x轴半径和y轴半径。
+    弧形命令A的第三个参数表示弧形的旋转情况。
+    large-arc-flag决定弧线是大于还是小于180度，0表示小角度弧，1表示大角度弧。
+    sweep-flag表示弧线的方向，0表示从起点到终点沿逆时针画弧，1表示从起点到终点沿顺时针画弧。
+    x：结束点x坐标。
+    y：结束点y坐标。 -->
+    <!-- https://blog.csdn.net/y281252548/article/details/127464369 -->
+    <!-- https://www.jianshu.com/p/c819ae16d29b -->
+    <!-- https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial/Paths -->
+    <svg width="400px" height="320px" version="1.1" style='border:1px solid #000' xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 315
+                 L 110 215
+                 A 30 30 0 0 1 162.55 162.45
+                 L 172.55 152.45
+                 A 30 50 -45 0 1 215.1 109.9
+                 L 315 10" stroke="black" fill="red" stroke-width="2" fill-opacity="0.5" />
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" style='border:1px solid #000'>
+        <path d="M 10 315
+                 L 110 215
+                 A 36 60 0 0 1 150.71 170.29
+                 L 172.55 152.45
+                 A 30 50 -45 0 1 215.1 109.9
+                 L 315 10" stroke="black" fill="green" stroke-width="2" fill-opacity="0.5"/>
+        <circle cx="150.71" cy="170.29" r="2" fill="red"/>
+        <circle cx="110" cy="215" r="2" fill="red"/>
+        <ellipse cx="144.931" cy="229.512" rx="36" ry="60" fill="transparent" stroke="blue"/>
+        <ellipse cx="115.779" cy="155.778" rx="36" ry="60" fill="transparent" stroke="blue"/>
+      </svg>
+      <svg width="325" height="325" style='border:1px solid #000' xmlns="http://www.w3.org/2000/svg">
+        <path d="M 80 80
+                 A 45 45, 0, 0, 0, 125 125
+                 L 125 80 Z" fill="green"/>
+        <path d="M 230 80
+                 A 45 45, 0, 1, 0, 275 125
+                 L 275 80 Z" fill="red"/>
+        <path d="M 80 230
+                 A 45 45, 0, 0, 1, 125 275
+                 L 125 230 Z" fill="purple"/>
+        <path d="M 230 230
+                 A 45 45, 0, 1, 1, 275 275
+                 L 275 230 Z" fill="blue"/>
+      </svg>
+      <svg width="200" height="140" style='border:1px solid #000' xmlns="http://www.w3.org/2000/svg">
+        <path d="M 20 20
+                 A 45 45, 0, 0, 1, 110 110
+                 L 65 20 Z" fill="green"/>
+        <!-- <circle cx="65" cy="65" r="45" fill="red" /> -->
+      </svg>
+      
+</body>
+
+</html>

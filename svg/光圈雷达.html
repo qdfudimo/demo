@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="background: #282c34;">
+        <svg xmlns="http://www.w3.org/2000/svg" height="200" width="200" style='border:1px solid #2cf7fe'>
+            <defs>
+                <radialGradient id="gradient2024" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="transparent" stop-opacity="1"></stop>
+                    <stop offset="100%" stop-color="rgba(44,247,254,0.3)" stop-opacity="1"></stop>
+                </radialGradient>
+            </defs>
+            <circle cx='100' cy="100" r="2" fill="#2cf7fe"></circle>
+            <circle cx='100' cy="100" r="30" stroke-width="1" stroke="#2cf7fe" fill="transparent"></circle>
+            <circle cx='100' cy="100" r="60" stroke-width="1" stroke="#2cf7fe" fill="transparent"></circle>
+            <circle cx='100' cy="100" r="90" stroke-width="1" stroke="#2cf7fe" fill="transparent"></circle>
+            <polyline points="100,10 100,190" stroke="#2cf7fe" stroke-width="0.5" opacity="0.5"></polyline>
+            <polyline points="190,100 10,100" stroke="#2cf7fe" stroke-width="0.5" opacity="0.5"></polyline>
+            <polyline points="145,25 25,175" stroke="#2cf7fe" stroke-width="0.5" opacity="0.5"></polyline>
+            <circle cx='100' cy="100" r="90" fill="url(#gradient2024)">
+                <animate attributeName="r" values="1;90" dur="2s" repeatCount="indefinite"></animate>
+                <animate attributeName="opacity" values="1;0" dur="2s" repeatCount="indefinite"></animate>
+            </circle>
+        </svg>
+    </div>
+    <script>
+        //中心点
+        let x = 100;
+        let y = 100;
+        let radious = 90
+        let angle = Math.PI / 6
+        //30deg的与圆弧焦点计算
+        // Math.cos 正弦计算的是斜边于角度临边的长度 乘以radious半径
+        // Math.sin 余弦计算的是斜边于角度对边的长度 乘以radious半径
+        //四个象限 正向限 加上180 就是对面象限的点
+        let x1 = x + Math.cos(angle * 1) * radious
+        let y1 = y - Math.sin(angle * 1) * radious
+    </script>
+</body>
+
+</html>
