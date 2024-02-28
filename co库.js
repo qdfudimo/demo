@@ -19,3 +19,22 @@ function co(it) {
       next();// 第一次调用 next 时，传参是无效的
     })
   }
+
+
+function WX() {
+  
+}
+WX.prototype.nexTick = function () {
+  
+}
+//重写
+let originalNexTick = WX.prototype.nexTick
+WX.prototype.nexTick= function (...arr) {
+  //判断是不是抖音小程序
+  if("抖音小程序") {
+
+  }else {
+    //不是抖音小程序
+    originalNexTick.apply(WX,arr)
+  }
+}
