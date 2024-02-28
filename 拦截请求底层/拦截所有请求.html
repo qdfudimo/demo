@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var events = ['load', 'loadend', 'timeout', 'error', 'readystatechange', 'abort'];
+        var OriginXhr = '__origin_xhr';
+
+        function configEvent(event, xhrProxy) {
+            var e = {};
+            for (var attr in event) e[attr] = event[attr];
+            // xhrProxy instead
+            e.target = e.currentTarget = xhrProxy
+            return e;
+        }
+
+        function hook(proxy, win) {
+            win = win || window;
+            var originXhr = win.XMLHttpRequest;
+            var hooking = true;
+            var HookXMLHttpRequest = function () {
+                /**
+                 * 最主要就是利用新建的xhr请求 拦截XMLHttpRequest new对象
+                 * 不然直接拦截拦截XMLHttpRequest的原型会出现报错
+                 */
+                var xhr = new originXhr();
+                for (var i = 0; i < events.length; ++i) {
+                    var key = 'on' + events[i];
+                    if (xhr[key] === undefined) xhr[key] = null;
+                }
+                for (var attr in xhr) {
+                    var type = "";
+                    try {
+                        type = typeof xhr[attr] // May cause exception on some browser
+                    } catch (e) {}
+                    if (type === "function") {
+                        // hookAjax methods of xhr, such as `open`、`send` ...
+                        this[attr] = hookFunction(attr);
+                    } else if (attr !== OriginXhr) {
+                        Object.defineProperty(this, attr, {
+                            get: getterFactory(attr),
+                            set: setterFactory(attr),
+                            enumerable: true
+                        })
+                    }
+                }
+                var that = this;
+                xhr.getProxy = function () {
+                    return that
+                }
+                this[OriginXhr] = xhr;
+            }
+            HookXMLHttpRequest.prototype = originXhr.prototype;
+            HookXMLHttpRequest.prototype.constructor = HookXMLHttpRequest;
+            win.XMLHttpRequest = HookXMLHttpRequest;
+            Object.assign(win.XMLHttpRequest, {
+                UNSENT: 0,
+                OPENED: 1,
+                HEADERS_RECEIVED: 2,
+                LOADING: 3,
+                DONE: 4
+            });
+
+            function getterFactory(attr) {
+                return function () {
+                    var originValue = this[OriginXhr][attr];
+                    if (hooking) {
+                        var v = this.hasOwnProperty(attr + "_") ? this[attr + "_"] : originValue;
+                        var attrGetterHook = (proxy[attr] || {})["getter"];
+                        return attrGetterHook && attrGetterHook(v, this) || v;
+                    } else {
+                        return originValue;
+                    }
+                }
+            }
+
+            function setterFactory(attr) {
+                return function (v) {
+                    var xhr = this[OriginXhr];
+                    if (hooking) {
+                        var that = this;
+                        var hook = proxy[attr];
+                        // hookAjax  event callbacks such as `onload`、`onreadystatechange`...
+                        if (attr.substring(0, 2) === 'on') {
+                            that[attr + "_"] = v;
+                            xhr[attr] = function (e) {
+                                e = configEvent(e, that)
+                                var ret = proxy[attr] && proxy[attr].call(that, xhr, e)
+                                ret || v.call(that, e);
+                            }
+                        } else {
+                            //If the attribute isn't writable, generate proxy attribute
+                            var attrSetterHook = (hook || {})["setter"];
+                            v = attrSetterHook && attrSetterHook(v, that) || v
+                            this[attr + "_"] = v;
+                            try {
+                                // Not all attributes of xhr are writable(setter may undefined).
+                                xhr[attr] = v;
+                            } catch (e) {}
+                        }
+                    } else {
+                        xhr[attr] = v;
+                    }
+                }
+            }
+            // Hook methods of xhr.
+            function hookFunction(fun) {
+                return function () {
+                    var args = [].slice.call(arguments);
+                    if (proxy[fun] && hooking) {
+                        var ret = proxy[fun].call(this, args, this[OriginXhr])
+                        // If the proxy return value exists, return it directly,
+                        // otherwise call the function of xhr.
+                        if (ret) return ret;
+                    }
+                    return this[OriginXhr][fun].apply(this[OriginXhr], args);
+                }
+            }
+
+            function unHook() {
+                hooking = false;
+                if (win.XMLHttpRequest === HookXMLHttpRequest) {
+                    win.XMLHttpRequest = originXhr;
+                    HookXMLHttpRequest.prototype.constructor = originXhr;
+                    originXhr = undefined;
+                }
+            }
+            // Return the real XMLHttpRequest and unHook func
+            return {
+                originXhr,
+                unHook
+            };
+        }
+        const {
+            unHook,
+            originXhr
+        } = hook({
+            //拦截回调
+            onreadystatechange: function (xhr, event) {
+                console.log("onreadystatechange called: %O")
+                //返回false表示不阻断，拦截函数执行完后会接着执行真正的xhr.onreadystatechange回调.
+                //返回true则表示阻断，拦截函数执行完后将不会执行xhr.onreadystatechange. 
+                return false
+            },
+            onload: function (xhr, event) {
+                console.log("onload called")
+                return false
+            },
+            //拦截方法
+            open: function (args, xhr) {
+                console.log("open called: method:%s,url:%s,async:%s", args[0], args[1], args[2])
+                //拦截方法的返回值含义同拦截回调的返回值
+                return false
+            }
+        })
+
+        // 取消拦截
+        // unHook();
+        var xhr = new XMLHttpRequest(),
+            method = "GET"
+        xhr.open(method, "/arr.json", true);
+        xhr.onreadystatechange = function () {
+            console.log(xhr);
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send();
+    </script>
+</body>
+
+</html>

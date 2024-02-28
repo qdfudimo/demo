@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         *
+         * 重写对象上面的某个属性
+         * ../param source 需要被重写的对象
+         * ../param name 需要被重写对象的key
+         * ../param replacement 以原有的函数作为参数，执行并重写原有函数
+         * ../param isForced 是否强制重写（可能原先没有该属性）
+         * ../returns void
+         */
+        //通过aop切面思想 拦截属性
+        const originalXhrProto = XMLHttpRequest.prototype;
+        function replaceAop(source, name, replacement, isForced = false) {
+            if (source === undefined) return;
+            if (name in source || isForced) {
+                const original = source[name];
+                const wrapped = replacement(original);
+                if (typeof wrapped === 'function') {
+                    source[name] = wrapped;
+                }
+            }
+        }
+        replaceAop(originalXhrProto, 'open', originalOpen => {
+            return function (...args) {
+                originalOpen.apply(this, args);
+            };
+        });
+        replaceAop(originalXhrProto, 'send', originalSend => {
+            return function (...args) {
+                originalSend.apply(this, args);
+            };
+        });
+        var xhr = new XMLHttpRequest(),
+            method = "GET"
+        xhr.open(method, "/arr.json", true);
+        xhr.onreadystatechange = function () {
+            console.log(xhr);
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send();
+    </script>
+</body>
+
+</html>
