@@ -12,6 +12,7 @@ class WebRTCAction {
             video: true,
             audio: false
         }).then((stream) => {
+            console.log(stream);
             allStream = stream;
             document.querySelector('#player').srcObject = stream;
             console.log('分享成功')
