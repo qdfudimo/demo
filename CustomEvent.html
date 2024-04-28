@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button type="button" id="btn">点我</button>
+
+    <script>
+        //创建自定义事件
+        var btn = document.getElementById('btn');
+        var eve = new CustomEvent('msg', {
+            detail: {
+                info: "hello word"
+            }
+        });
+
+        btn.addEventListener('msg', function (event) {
+            console.log(event.detail.info);
+        }, false)
+
+        btn.dispatchEvent(eve); // hello word
+    </script>
+</body>
+
+</html>
