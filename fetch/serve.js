@@ -12,7 +12,7 @@ app.get('/test', (req, res) => {
 	console.log("触发了");
 	setTimeout(() => {
 		res.send('this is a test message' + index);
-	}, 2000);
+	}, 10000);
 	index++
 })
 // 将前端项目所在文件夹设置为静态资源
