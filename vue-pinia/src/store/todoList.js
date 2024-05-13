@@ -4,7 +4,11 @@ import {
 const useTodoList = defineStore("todo", {
     state: () => ({
         /** @type {{ text: string, id: number, isFinished: boolean }[]} */
-        todos: [],
+        todos: [{
+            text: "inputValue.value",
+            id: 122233,
+            isFinished: true
+          }],
         nextId: 0,
     }),
     getters: {
@@ -16,6 +20,7 @@ const useTodoList = defineStore("todo", {
     actions: {
         // 任何数量的参数，返回一个 Promise 或者不返回
         addTodo(text) {
+            console.log(this.finishedTodos);
             // 你可以直接改变状态
             this.todos.push({
                 text,

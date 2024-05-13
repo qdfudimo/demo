@@ -88,7 +88,8 @@ const show = ref(false)
 //   list.value.push(1)
 // })
 const state = useTodoList()
-// console.log(state.todos)
+console.log(state.finishedTodos)
+console.log(state.todos)
 const count = ref(0)
 const inputValue = ref("")
 const handelInput = () => {
@@ -103,14 +104,14 @@ const todosRec = reactive({
 })
 const store = {}
 const handelClick = () => {
-  // state.addTodo("在哪啊")
+  state.addTodo("在哪啊")
   // list.value.push(2)
   count1.value = 3
-  store.arrList = toRef(todosRec,"arrList")
-  console.log(store.arrList);
-  const storeCopy = reactive(store)
+  // store.arrList = toRef(todosRec,"arrList")
+  // console.log(store.arrList);
+  // const storeCopy = reactive(store)
   //toRef解构出来的 再用reactive包裹 .value获取不到了
-  console.log(storeCopy.arrList);
+  // console.log(storeCopy.arrList);
 }
 </script>
 <script>
