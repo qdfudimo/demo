@@ -1,0 +1,80 @@
+:root {
+    --atinput-color: #2C3E59;
+    --atinput-border-color: #8EABD1;
+    --atinput-border-color__hover: #1D71F0;
+    --atinput-border-color__error: #CC0814;
+    --atinput-border-color__disabled: #8EABD1;
+    --atinput-background-color: #F9FBFF;
+    --atinput-background-color__disabled: #E5EDF9;
+    --atinput-font-size: 14px;
+    --atinput-placeholder-color: #A3AFC2;
+    --atinput-popover-boder-color: #1D71F0;
+    --atinput-popover-background-color: #F9FBFF;
+    --atinput-popover-item-background-color__hover: #E5EDF9;
+    --atinput-tip-color: #7C8BA3;
+}
+
+.at-container {
+    color: var(--atinput-color);
+    font-size: var(--atinput-font-size);
+    .at-input {
+        width: 100%;
+        border: 1px solid var(--atinput-border-color);
+        background-color: var(--atinput-background-color);
+        outline: none;
+        overflow-y: auto;
+        padding: 4px 8px;
+        &:hover:not(.is-error, .is-disabled), &:focus:not(.is-error, .is-disabled) {
+            border-color: var(--atinput-border-color__hover);
+        }
+        .at-span {
+            margin: 0 4px;
+        }
+        .placeholder {
+            color: var(--atinput-placeholder-color);
+        }
+        &.is-error {
+            border-color: var(--atinput-border-color__error);
+        }
+        &.is-disabled {
+            border-color: var(--atinput-border-color__disabled);
+            background-color: var(--atinput-background-color__disabled);
+            user-select: none;
+            cursor: not-allowed;
+        }
+        &.is-wrap {
+            height: var(--at-input-height);
+        }
+    }
+    
+    .at-popover {
+        position: absolute;
+        background: var(--atinput-popover-background-color);
+        border: 1px solid var(--atinput-popover-boder-color);
+        .loading-tip {
+            padding: 4px 8px;
+            color: var(--atinput-tip-color);
+        }
+        .at-popover-list {
+            list-style: none;
+            margin: 4px 0;
+            padding: 0;
+            outline: none;
+            max-height: 200px;
+            overflow-y: auto;
+            .at-popover-item {
+                min-width: 80px;
+                padding: 4px 8px;
+                cursor: pointer;
+                &:hover, &:focus, &.active {
+                    background-color: var(--atinput-popover-item-background-color__hover);
+                }
+            }
+            .empty {
+                min-width: 80px;
+                padding: 4px 8px;
+                color: var(--atinput-tip-color);
+            }
+        }
+    }
+}
