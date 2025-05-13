@@ -1,33 +1,45 @@
 <script setup>
-import { reactive, ref, watchEffect, h,createVNode, getCurrentInstance, render, watch } from "vue";
-import HelloWorld from './components/HelloWorld.vue';
+import {
+  reactive,
+  ref,
+  watchEffect,
+  h,
+  createVNode,
+  getCurrentInstance,
+  render,
+  watch,
+} from "vue";
+import HelloWorld from "./components/HelloWorld.vue";
 import testPage from "./components/test-page.vue";
 import testCom from "./components/testCom.vue";
 import vAuth from "./directive/permission";
-const vNode = createVNode(testCom,{num:1});
+import demo from "/demo/demo.js";
+import ellipsisMultiTag from "./ellipsisMultiTag.vue";
+const vNode = createVNode(testCom, { num: 1 });
 // console.log(getCurrentInstance());
 console.log(vNode);
-const container = document.createElement('div');
+const container = document.createElement("div");
 render(vNode, container);
 console.log(container);
 const handelClick = (flag) => {
   // codeList.push(4)
   if (flag) {
-    curCode.value = 3
-    return
+    curCode.value = 3;
+    return;
   }
-  curCode.value = 4
-}
-const curCode = ref(3)
-const divE = ref(null)
-watch(divE,(o,n)=>{
-  console.log(o,n);
-})
-const headerRender = ({ column }) => h("div", null, `${column.label}(渲染函数自定义表头)`)
+  curCode.value = 4;
+};
+const curCode = ref(3);
+const divE = ref(null);
+watch(divE, (o, n) => {
+  console.log(o, n);
+});
+const headerRender = ({ column }) =>
+  h("div", null, `${column.label}(渲染函数自定义表头)`);
 </script>
 
 <template>
-  <component :is="headerRender" :column="{ 'label': '自定义' }" />
+  <component :is="headerRender" :column="{ label: '自定义' }" />
   <test-page>
     <div>2222</div>
     <div>22200000</div>
@@ -45,6 +57,19 @@ const headerRender = ({ column }) => h("div", null, `${column.label}(渲染函�
   <button hover-class="button-hover" @click="() => handelClick(true)">
     再次点击更新
   </button>
+  <ellipsisMultiTag
+    :tagStyle="{
+      display: 'inline-block',
+      padding: '0 15px',
+      height: '28px',
+      'line-height': ' 28px',
+      background: ' #ecf5ff',
+      ' border-radius': '2px',
+      color: ' #3581d0',
+      'margin-right': '5px',
+      'margin-bottom': '5px',
+    }"
+  />
 </template>
 
 <style scoped>

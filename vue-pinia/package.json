@@ -12,10 +12,12 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.3.6",
+    "splitpanes": "^3.1.8",
     "vue": "^3.2.47"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
+    "less": "^4.2.2",
     "rollup-plugin-copy": "^3.5.0",
     "rsync": "^0.6.1",
     "vite": "^4.3.2"
