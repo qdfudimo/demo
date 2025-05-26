@@ -1,0 +1,15 @@
+{
+  "name": "obfuscator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "javascript-obfuscator ./config.js --output ./config.obfuscated.js --unicode-escape-sequence true"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  }
+}
