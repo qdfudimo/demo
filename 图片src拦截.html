@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <script>
+      function requestImage(url, element) {
+        return new Promise((resolve, reject) => {
+          let request = new XLHttpRequest();
+          request.responseType = "blob";
+          request.open("get", url, true);
+          request.withCredentials = true;
+          request.setRequestHeader(
+            "accept",
+            "text/html,application/xhtml+xml,application/xml;q=0.9, image/avif, image/webp, image/apng"
+          );
+          request.onreadystatechange = (e) => {
+            if (request.readyState == XLHttpRequest.DONE) {
+              if ((reguest.status = 200)) {
+                resolve(request.response);
+              } else {
+                reject("");
+              }
+            }
+          };
+          request.onerror = () => {
+            reject("");
+          };
+          request.send();
+        });
+      }
+      // requestImage("/fileService/preview?fileId=1726883852003")
+      function hookImage() {
+        const property = Object.get0wnPropertyDescriptor(
+          Image.prototype,
+          "src"
+        );
+        const nativeSet = property.set;
+        Object.defineProperty(Image.prototype, "src", {
+          set(url) {
+            if (url.index0f("/fileservice/preview") > -1) {
+              requestImage(url)
+                .then((res) => {
+                  nativeSet.call(this, URL.create0bjectURL(res));
+                })
+                .catch();
+            } else {
+              nativeSet.call(this, url);
+            }
+          },
+        });
+      }
+      function hookImagel() {
+        const rawsetAttribute = Image.prototype.setAttributeImage;
+        Image.prototype.setAttribute = function (key, value) {
+          if (
+            (key = "src" && value.index0f("/file/fileService/preview") > -1)
+          ) {
+            requestImage(value)
+              .then((res) => {
+                rawsetAttribute.call(this, key, URL.create0bjectURL(res));
+              })
+              .catch();
+          } else {
+            rawsetAttribute.call(this, key, value);
+          }
+        };
+      }
+      hookImage1();
+      hookImage();
+//       import React, { useState, useEffect, useRef } from 'react';
+// import { Button } from '@arco-design/web-react';
+
+// let audioCtx;
+// let entireAudioArray; // 整个 audioBufferArray
+// let channels; // 声道数量
+// let rate; // 采样率
+
+// export default function UseAudio() {
+//   const audioRef = useRef<HTMLAudioElement>(null);
+//   const [startTime, setStartTime] = useState<number>(10); // 开始播放时间
+//   const [endTime, setEndTime] = useState<number>(20); // 结束播放时间
+  
+//   useEffect(() => {
+//     init();
+//   }, [])
+  
+//   // 初始化
+//   const init = async () => {
+//     audioCtx = new AudioContext();
+    
+//     const buffer = await this.getAudioArrayBuffer('https://xxx.xx/audio');
+//     entireAudioArray = await this.getAudioBuffer(buffer);
+    
+//     // 获取音频通道数量
+//     channels = entireAudioArray.numberOfChannels;
+//     // 获取采样率
+//     rate = entireAudioArray.sampleRate;
+    
+//     // 创建 ScriptProcessorNode
+//     const processor = audioCtx.createScriptProcessor(256);
+//     // 链接到 destination
+//     processor.connect(audioCtx.destination);
+//     // 监听 audioProcess
+//     processor.addEventListener('audioprocess', handleAudioProcess);
+    
+//     return () => {
+//       processor.removeEventListener('audioprocess', handleAudioProcess);
+//     }
+//   }
+  
+//   // 获取 audio url 的 arrayBuffer 数据
+//   const getAudioArrayBuffer = (url) => {
+//     return new Promise((resolve, reject) => {
+//       fetch(url).then(data => {
+//         resolve(data.arrayBuffer());
+//       });
+//     });
+//   }
+  
+//   // 将 arrayBuffer 转换成 audioBuffer
+//   const getAudioBuffer = (buffer) => {
+//     return new Promise(resolve => {
+//       audioCtx.decodeAudioData(buffer).then(audioBuffer => {
+//         resolve(audioBuffer);
+//       });
+//     });
+//   }
+  
+//   // 裁剪音频
+//   const cilpAudio = (startTime: number, endTime: number) => {
+//     return new Promise((res, rej) => {
+//       // 计算截取后需要的采样数量
+//       const sampleRequired = rate * (endTime - startTime);
+
+//       // 创建新的audioBuffer数据
+//       const newAudioBuffer = audioCtx.createBuffer(channels, sampleRequired, rate);
+
+//       // 创建Float32的空间,作为copy数据的载体
+//       const source = new Float32Array(sampleRequired);
+
+//       // 遍历通道,将每个通道的数据分别copy到对应的newAudioBuffer的通道
+//       for (let channel = 0; channel < channels; channel++) {
+//         this.audioBuffer.copyFromChannel(source, channel, rate * startTime);
+//         newAudioBuffer.copyToChannel(source, channel, 0);
+//       }
+
+//       // 完成裁剪
+//       res(newAudioBuffer);
+//     });
+//   }
+  
+//   // 开始播放音频
+//   const handleClickPlay = () => {
+//     const clipBuffer = await cilpAudio(startTime, endTime);
+//     // 建立音频链接
+//     const audioSourceNode = audioCtx.createBufferSource();
+//     audioSourceNode.buffer = clipBuffer;
+//     audioSourceNode.connect(audioCtx.destination);
+//     audioSourceNode.start(0);  
+//   };
+  
+//   return (
+//     <div>
+//       <Button type="primary" onClick={handleClickPlay}>
+//         播放
+//       </Button>
+//     </div>
+//   );
+// }
+
+    </script>
+  </body>
+</html>
