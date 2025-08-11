@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form>
+        <input type="file" id="file" accept="audio/mpeg">
+    </form>
+
+    <p><audio id="audio" controls></audio></p>
+    <script>
+        // var audioCtx = new AudioContext();
+        // var buffer = audioCtx.createBuffer(2, 22050, 44100);
+        // 如果你这样调用，你将会得到一个立体声（两个声道）的音频片段(Buffer)，
+        // 当它在一个频率为 44100 赫兹（这是目前大部分声卡处理声音的频率）的音频环境(AudioContext) 
+        // 中播放的时候，会持续 0.5 秒：22050 帧 / 44100 赫兹 = 0.5 秒。
+        // https://www.zhangxinxu.com/wordpress/2020/07/js-audio-clip-copy-upload/
+        file.onchange = function (event) {
+            var target = event.target;
+            var file = target.files[0];
+            var type = file.type;
+            // 开始识别
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var arrBuffer = event.target.result;
+
+                var audioCtx = new AudioContext();
+
+                audioCtx.decodeAudioData(arrBuffer, function (audioBuffer) {
+                    // 声道数量
+                    var channels = audioBuffer.numberOfChannels;
+                    // 采样率
+                    var rate = audioBuffer.sampleRate;
+                    console.log(channels, rate);
+
+                    // 3秒
+                    var startOffset = 0;
+                    var endOffset = rate * 1;
+                    // 计算截取后需要的采样数量
+                    var frameCount = endOffset - startOffset;
+                    var newAudioBuffer;
+                    // 创建新的
+                    newAudioBuffer = new AudioContext().createBuffer(channels, frameCount, rate);
+                    // 创建Float32的空间,作为copy数据的载体
+                    var anotherArray = new Float32Array(frameCount);
+                    var offset = 0;
+                    // 遍历通道,将每个通道的数据分别copy到对应的newAudioBuffer的通道
+                    for (var channel = 0; channel < channels; channel++) {
+                        /**
+                         *假设我们有一个 AudioBuffer 对象，名为 audioBuffer
+                        *我们想要复制它的第0个通道的数据
+                        *创建一个足够长的 Float32Array 来存放数据
+                        *假设我们想从第0个采样开始复制整个通道
+                        *const channelData = new Float32Array(audioBuffer.length);
+                        *复制第0通道的数据到 channelData 数组
+                        *audioBuffer.copyFromChannel(channelData, 0, 0);
+                        *如果我们只想复制一部分，可以这样：
+                        *假设我们只想从第100个采样开始复制200个采样
+                        *const partialData = new Float32Array(200);
+                        *audioBuffer.copyFromChannel(partialData, 0, 100); // 从第0通道的第100个采样开始复制200个（因为partialData长度是200）
+                        *注意：如果通道从100开始只有150个采样，那么partialData中后面的50个采样将不会被赋值（保持原值）。
+                         * copyFromChannel(destination, channelNumber, startInChannel?)
+                            参数：
+                              - destination: 一个 `Float32Array`，用于接收通道的数据。
+                              - channelNumber: 要从中复制数据的通道索引（从0开始）。
+                              - startInChannel (可选): 从通道的哪个采样索引开始复制。默认为0。
+                        */
+                        audioBuffer.copyFromChannel(anotherArray, channel, rate * startOffset);
+                        newAudioBuffer.copyToChannel(anotherArray, channel, offset);
+                    }
+                    console.log(newAudioBuffer);
+
+                    /**
+                    * 直接播放使用下面的代码
+                    // 创建AudioBufferSourceNode对象
+                    var source = audioCtx.createBufferSource();
+                    // 设置AudioBufferSourceNode对象的buffer为复制的3秒AudioBuffer对象
+                    source.buffer = newAudioBuffer;
+                    // 这一句是必须的，表示结束，没有这一句没法播放，没有声音
+                    // 这里直接结束，实际上可以对结束做一些特效处理
+                    source.connect(audioCtx.destination);
+                    // 资源开始播放
+                    source.start();
+                    */
+
+                    // var blob = bufferToWave(newAudioBuffer, frameCount);
+                    /**
+                    * 转换成Base64使用下面的代码
+                    var reader2 = new FileReader();
+                    reader2.onload = function(evt){
+                        audio.src = evt.target.result;
+                    };
+                    reader2.readAsDataURL(blob);
+                    */
+                    // 使用Blob地址
+                    // audio.src = URL.createObjectURL(blob);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+
+        };
+
+        // Convert AudioBuffer to a Blob using WAVE representation
+        function bufferToWave(abuffer, len) {
+            var numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample,
+                offset = 0,
+                pos = 0;
+
+            // write WAVE header
+            setUint32(0x46464952);                         // "RIFF"
+            setUint32(length - 8);                         // file length - 8
+            setUint32(0x45564157);                         // "WAVE"
+
+            setUint32(0x20746d66);                         // "fmt " chunk
+            setUint32(16);                                 // length = 16
+            setUint16(1);                                  // PCM (uncompressed)
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2);                      // block-align
+            setUint16(16);                                 // 16-bit (hardcoded in this demo)
+
+            setUint32(0x61746164);                         // "data" - chunk
+            setUint32(length - pos - 4);                   // chunk length
+
+            // write interleaved data
+            for (i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while (pos < length) {
+                for (i = 0; i < numOfChan; i++) {             // interleave channels
+                    sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0; // scale to 16-bit signed int
+                    view.setInt16(pos, sample, true);          // write 16-bit sample
+                    pos += 2;
+                }
+                offset++                                     // next source sample
+            }
+
+            // create Blob
+            return new Blob([buffer], { type: "audio/wav" });
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+    </script>
+</body>
+
+</html>
