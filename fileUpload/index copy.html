@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.24.0/axios.min.js"></script>
+</head>
+
+<body>
+    <input type="file" multiple />
+    <button style="margin-bottom: 16px;">上传</button>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000'
+        const input = document.querySelector("input");
+        let files;
+        input.addEventListener("change", (e) => {
+            files = e.target.files
+            console.log(files);
+        })
+        document.querySelector("button").addEventListener("click", async () => {
+            if (!files) return
+            const formData = new FormData();
+            // 将多个文件添加到FormData中
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            // 发送请求
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => console.log('上传成功', data))
+                .catch(error => console.error('上传失败', error));
+        })
+    </script>
+</body>
+
+</html>

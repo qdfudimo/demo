@@ -81,7 +81,9 @@
             // 每次响应式，根据上次缩放比例计算是地图的设计宽高 offsetWidth / preScale
             const newWidth = (offsetWidth / preScale) * scale;
             const newHeight = (offsetHeight / preScale) * scale;
-
+            //let scalewidth = newWidth*scale 缩小了这么多 又要放大回去  
+            // newWidth = scalewidth*x  x = 1 / scale
+            // newWidth = newWidth*scale*x  1 = scale*x     x = 1 / scale
             map.style.transform = `scale(${1 / scale})` // 抵消父级的scale，还原map容器
                 // 改变map容器真实宽高来适应屏幕变化
             map.style.width = newWidth + "px"
