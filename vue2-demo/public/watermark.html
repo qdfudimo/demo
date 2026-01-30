@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量截图加水印</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .elements-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .screenshot-element {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+        
+        .element-1 {
+            border-left: 5px solid #3498db;
+        }
+        
+        .element-2 {
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .element-3 {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .element-4 {
+            border-left: 5px solid #f39c12;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        p {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        #downloadAllBtn {
+            background: #2ecc71;
+        }
+        
+        #downloadAllBtn:hover {
+            background: #27ae60;
+        }
+        
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .result-item img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        
+        .download-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>批量截图加水印功能</h1>
+        
+        <div class="controls">
+            <button id="captureBtn">批量截图并添加水印</button>
+            <button id="downloadAllBtn">打包下载所有图片</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            正在生成图片，请稍候...
+        </div>
+        
+        <div class="elements-container">
+            <div class="screenshot-element element-1" data-id="element1">
+                <h2>元素一：销售报告</h2>
+                <p>2024年第一季度销售数据分析报告，包含各地区销售数据和趋势分析。</p>
+                <ul>
+                    <li>总收入：¥1,234,567</li>
+                    <li>同比增长：15.6%</li>
+                    <li>最畅销产品：智能设备X1</li>
+                </ul>
+            </div>
+            
+            <div class="screenshot-element element-2" data-id="element2">
+                <h2>元素二：用户统计</h2>
+                <p>平台用户增长情况和活跃度分析，涵盖新用户获取和老用户留存数据。</p>
+                <ul>
+                    <li>总用户数：89,432</li>
+                    <li>月活跃用户：45,678</li>
+                    <li>用户增长率：8.2%</li>
+                </ul>
+            </div>
+            
+            <div class="screenshot-element element-3" data-id="element3">
+                <h2>元素三：项目进度</h2>
+                <p>当前项目开发进度和里程碑完成情况，包含各团队任务分配。</p>
+                <ul>
+                    <li>项目完成度：75%</li>
+                    <li>剩余时间：45天</li>
+                    <li>当前里程碑：V3.0测试版</li>
+                </ul>
+            </div>
+            
+            <div class="screenshot-element element-4" data-id="element4">
+                <h2>元素四：绩效指标</h2>
+                <p>团队绩效评估和KPI完成情况，包含各成员贡献度分析。</p>
+                <ul>
+                    <li>团队绩效：92.5分</li>
+                    <li>KPI完成率：88%</li>
+                    <li>优秀成员：张明</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="results" class="results-container"></div>
+    </div>
+
+    <script>
+        class BatchScreenshotWithWatermark {
+            constructor() {
+                this.images = [];
+                this.captureBtn = document.getElementById('captureBtn');
+                this.downloadAllBtn = document.getElementById('downloadAllBtn');
+                this.resultsContainer = document.getElementById('results');
+                this.loading = document.getElementById('loading');
+                
+                this.init();
+            }
+            
+            init() {
+                this.captureBtn.addEventListener('click', () => this.captureAllElements());
+                this.downloadAllBtn.addEventListener('click', () => this.downloadAllImages());
+            }
+            
+            async captureAllElements() {
+                this.images = [];
+                this.resultsContainer.innerHTML = '';
+                this.loading.style.display = 'block';
+                
+                const elements = document.querySelectorAll('.screenshot-element');
+                
+                for (const element of elements) {
+                    try {
+                        const imageData = await this.captureWithWatermark(element);
+                        this.images.push({
+                            id: element.dataset.id,
+                            data: imageData,
+                            name: element.querySelector('h2').textContent
+                        });
+                        
+                        this.displayImage(element.dataset.id, imageData, element.querySelector('h2').textContent);
+                    } catch (error) {
+                        console.error(`截图失败 ${element.dataset.id}:`, error);
+                    }
+                }
+                
+                this.loading.style.display = 'none';
+                alert(`成功生成 ${this.images.length} 张图片！`);
+            }
+            
+            async captureWithWatermark(element) {
+                // 创建canvas
+                const canvas = await html2canvas(element, {
+                    backgroundColor: null,
+                    scale: 2, // 提高分辨率
+                    useCORS: true,
+                    logging: false
+                });
+                
+                // 创建水印canvas
+                const watermarkedCanvas = this.addWatermark(canvas, {
+                    text: '机密文档 © 2024',
+                    fontSize: 20,
+                    color: 'rgba(0, 0, 0, 0.3)',
+                    angle: -30
+                });
+                
+                return watermarkedCanvas.toDataURL('image/png');
+            }
+            
+            addWatermark(sourceCanvas, options = {}) {
+                const {
+                    text = '水印文字',
+                    fontSize = 20,
+                    color = 'rgba(0, 0, 0, 0.3)',
+                    angle = -30
+                } = options;
+                
+                const watermarkCanvas = document.createElement('canvas');
+                const ctx = watermarkCanvas.getContext('2d');
+                
+                // 设置canvas尺寸与源canvas相同
+                watermarkCanvas.width = sourceCanvas.width;
+                watermarkCanvas.height = sourceCanvas.height;
+                
+                // 先绘制原始内容
+                ctx.drawImage(sourceCanvas, 0, 0);
+                
+                // 设置水印样式
+                ctx.font = `${fontSize}px Arial`;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // 保存当前状态
+                ctx.save();
+                
+                // 旋转画布
+                ctx.translate(watermarkCanvas.width / 2, watermarkCanvas.height / 2);
+                ctx.rotate(angle * Math.PI / 180);
+                
+                // 绘制水印（重复平铺）
+                const textWidth = ctx.measureText(text).width;
+                const spacing = 200; // 水印间距
+                
+                for (let x = -watermarkCanvas.width; x < watermarkCanvas.width * 2; x += spacing) {
+                    for (let y = -watermarkCanvas.height; y < watermarkCanvas.height * 2; y += spacing) {
+                        ctx.fillText(text, x, y);
+                    }
+                }
+                
+                // 恢复状态
+                ctx.restore();
+                
+                return watermarkCanvas;
+            }
+            
+            displayImage(id, dataUrl, title) {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <h3>${title}</h3>
+                    <img src="${dataUrl}" alt="${title}" />
+                    <button class="download-btn" onclick="batchScreenshot.downloadSingleImage('${id}')">
+                        下载图片
+                    </button>
+                `;
+                this.resultsContainer.appendChild(resultItem);
+            }
+            
+            downloadSingleImage(id) {
+                const image = this.images.find(img => img.id === id);
+                if (image) {
+                    this.downloadImage(image.data, `${image.name}.png`);
+                }
+            }
+            
+            downloadAllImages() {
+                if (this.images.length === 0) {
+                    alert('请先生成图片！');
+                    return;
+                }
+                
+                // 如果浏览器支持JSZip，可以打包下载
+                if (typeof JSZip !== 'undefined') {
+                    this.downloadAsZip();
+                } else {
+                    // 否则逐个下载
+                    this.images.forEach((image, index) => {
+                        setTimeout(() => {
+                            this.downloadImage(image.data, `截图_${index + 1}_${image.name}.png`);
+                        }, index * 100);
+                    });
+                }
+            }
+            
+            downloadImage(dataUrl, filename) {
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // 如果需要打包下载，需要引入JSZip库
+            async downloadAsZip() {
+                try {
+                    const JSZip = window.JSZip;
+                    const zip = new JSZip();
+                    
+                    // 添加图片到zip
+                    this.images.forEach(image => {
+                        const base64Data = image.data.split(',')[1];
+                        zip.file(`${image.name}.png`, base64Data, {base64: true});
+                    });
+                    
+                    // 生成zip文件
+                    const content = await zip.generateAsync({type: "blob"});
+                    
+                    // 下载zip文件
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = '截图打包.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                    
+                } catch (error) {
+                    console.error('打包下载失败:', error);
+                    alert('打包下载失败，将改为逐个下载');
+                    this.images.forEach((image, index) => {
+                        this.downloadImage(image.data, `截图_${index + 1}_${image.name}.png`);
+                    });
+                }
+            }
+        }
+        
+        // 初始化
+        const batchScreenshot = new BatchScreenshotWithWatermark();
+        
+        // 如果要用打包下载功能，可以引入JSZip
+        // <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    </script>
+</body>
+</html>

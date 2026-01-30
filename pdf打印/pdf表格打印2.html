@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中文PDF表格生成器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- 字体加载器 -->
+    <script src="js/chinese-fonts.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-file-pdf"></i> 中文PDF表格生成器</h1>
+            <p class="subtitle">支持中文，解决乱码问题</p>
+        </header>
+
+        <div class="control-panel">
+            <div class="font-selector">
+                <h2><i class="fas fa-font"></i> 选择中文字体</h2>
+                <div class="font-options">
+                    <button class="font-btn active" data-font="simhei">
+                        <i class="fas fa-square"></i> 黑体 (SimHei)
+                    </button>
+                    <button class="font-btn" data-font="simsun">
+                        <i class="fas fa-square"></i> 宋体 (SimSun)
+                    </button>
+                    <button class="font-btn" data-font="msyh">
+                        <i class="fas fa-square"></i> 微软雅黑
+                    </button>
+                    <button class="font-btn" data-font="kaiti">
+                        <i class="fas fa-square"></i> 楷体
+                    </button>
+                </div>
+            </div>
+
+            <div class="export-buttons">
+                <h2><i class="fas fa-download"></i> 导出选项</h2>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="exportSimple">
+                        <i class="fas fa-table"></i> 简单表格
+                    </button>
+                    <button class="btn btn-secondary" id="exportInvoice">
+                        <i class="fas fa-file-invoice"></i> 发票/收据
+                    </button>
+                    <button class="btn btn-success" id="exportReport">
+                        <i class="fas fa-chart-line"></i> 报表
+                    </button>
+                    <button class="btn btn-warning" id="exportEmployee">
+                        <i class="fas fa-users"></i> 员工表
+                    </button>
+                    <button class="btn btn-info" id="exportProduct">
+                        <i class="fas fa-box"></i> 产品清单
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h2><i class="fas fa-eye"></i> 预览数据</h2>
+                <div class="table-preview">
+                    <table id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>产品名称</th>
+                                <th>类别</th>
+                                <th>价格</th>
+                                <th>库存</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>笔记本电脑</td>
+                                <td>电子产品</td>
+                                <td>¥6,599</td>
+                                <td>25</td>
+                                <td><span class="badge success">有货</span></td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>智能手机</td>
+                                <td>电子产品</td>
+                                <td>¥3,299</td>
+                                <td>42</td>
+                                <td><span class="badge success">有货</span></td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>无线耳机</td>
+                                <td>配件</td>
+                                <td>¥899</td>
+                                <td>0</td>
+                                <td><span class="badge danger">缺货</span></td>
+                            </tr>
+                            <tr>
+                                <td>004</td>
+                                <td>机械键盘</td>
+                                <td>外设</td>
+                                <td>¥1,299</td>
+                                <td>15</td>
+                                <td><span class="badge warning">低库存</span></td>
+                            </tr>
+                            <tr>
+                                <td>005</td>
+                                <td>显示器</td>
+                                <td>外设</td>
+                                <td>¥2,199</td>
+                                <td>8</td>
+                                <td><span class="badge warning">低库存</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="settings">
+                <h2><i class="fas fa-cog"></i> 设置</h2>
+                <div class="setting-options">
+                    <label>
+                        <input type="checkbox" id="addHeader" checked> 添加页眉
+                    </label>
+                    <label>
+                        <input type="checkbox" id="addFooter" checked> 添加页脚
+                    </label>
+                    <label>
+                        <input type="checkbox" id="addWatermark" checked> 添加水印
+                    </label>
+                    <label>
+                        <input type="checkbox" id="autoPageBreak" checked> 自动分页
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div id="statusMessage">就绪</div>
+            <div class="font-info">
+                当前字体: <span id="currentFont">黑体</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载PDF导出模块 -->
+    <script src="js/pdf-export.js"></script>
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 字体选择
+            const fontButtons = document.querySelectorAll('.font-btn');
+            fontButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    fontButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const font = this.dataset.font;
+                    document.getElementById('currentFont').textContent = 
+                        font === 'simhei' ? '黑体' :
+                        font === 'simsun' ? '宋体' :
+                        font === 'msyh' ? '微软雅黑' : '楷体';
+                    
+                    window.currentFont = font;
+                    showStatus(`已选择字体: ${font}`);
+                });
+            });
+            
+            // 设置初始字体
+            window.currentFont = 'simhei';
+            
+            // 绑定导出按钮事件
+            document.getElementById('exportSimple').addEventListener('click', exportSimpleTable);
+            document.getElementById('exportInvoice').addEventListener('click', exportInvoice);
+            document.getElementById('exportReport').addEventListener('click', exportReport);
+            document.getElementById('exportEmployee').addEventListener('click', exportEmployeeTable);
+            document.getElementById('exportProduct').addEventListener('click', exportProductTable);
+            
+            // 显示状态消息
+            function showStatus(message, type = 'info') {
+                const status = document.getElementById('statusMessage');
+                status.textContent = message;
+                status.className = type;
+                
+                if (type === 'error') {
+                    status.style.color = '#dc3545';
+                } else if (type === 'success') {
+                    status.style.color = '#28a745';
+                } else {
+                    status.style.color = '#17a2b8';
+                }
+            }
+            
+            // 导出函数（定义在pdf-export.js中）
+            window.showStatus = showStatus;
+            
+            // 初始化状态
+            showStatus('请选择字体并点击导出按钮', 'info');
+        });
+    </script>
+</body>
+</html>
